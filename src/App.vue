@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
+import AboutDialog from './components/AboutDialog.vue'
 import HomeView from './components/HomeView.vue'
 import PlaceholderView from './components/PlaceholderView.vue'
 import SettingsView from './components/SettingsView.vue'
@@ -20,7 +21,6 @@ type ViewId =
   | 'story'
   | 'chapters'
   | 'help'
-  | 'about'
 
 const titles: Record<Exclude<ViewId, 'home'>, string> = {
   'quick-write': 'Quick Write',
@@ -37,16 +37,20 @@ const titles: Record<Exclude<ViewId, 'home'>, string> = {
   story: 'Story',
   chapters: 'Chapters',
   help: 'Help',
-  about: 'About',
 }
 
 const view = ref<ViewId>('home')
+const aboutOpen = ref(false)
 
 function navigate(v: string) {
   if (v === 'home' || v in titles) view.value = v as ViewId
 }
 
 function onMenuAction(_event: unknown, action: string) {
+  if (action === 'about') {
+    aboutOpen.value = true
+    return
+  }
   navigate(action)
 }
 
@@ -58,4 +62,6 @@ onBeforeUnmount(() => window.ipcRenderer?.off('menu-action', onMenuAction))
   <HomeView v-if="view === 'home'" @navigate="navigate" />
   <SettingsView v-else-if="view === 'settings'" @back="navigate('home')" />
   <PlaceholderView v-else :title="titles[view]" @back="navigate('home')" />
+
+  <AboutDialog v-if="aboutOpen" @close="aboutOpen = false" />
 </template>
