@@ -1,7 +1,46 @@
 <script setup lang="ts">
 import AppButton from './ui/AppButton.vue'
+import { useProjectStore } from '../store/projects'
+import type { MenuGroup } from '../libs/models/MenuGroup'
+import { ref } from 'vue'
 
-defineEmits<{ navigate: [view: string] }>()
+const emit = defineEmits<{ navigate: [view: string] }>()
+
+const projectStore = useProjectStore()
+
+// Grouped menus shown when a project is open, matching the commented-out
+// Database and Write menus in electron/main/index.ts.
+const menus: MenuGroup[] = [
+  {
+    label: 'Database',
+    items: [
+      { label: 'Characters', view: 'characters' },
+      { label: 'Places', view: 'places' },
+      { label: 'Items', view: 'items' },
+      { label: 'Timeline', view: 'timeline' },
+      { label: 'Plots', view: 'plots' },
+    ],
+  },
+  {
+    label: 'Write',
+    items: [
+      { label: 'Draft', view: 'draft' },
+      { label: 'Story', view: 'story' },
+      { label: 'Chapters', view: 'chapters' },
+    ],
+  },
+]
+
+const openMenu = ref<number | null>(null)
+
+function toggleMenu(index: number) {
+  openMenu.value = openMenu.value === index ? null : index
+}
+
+function selectItem(view: string) {
+  openMenu.value = null
+  emit('navigate', view)
+}
 </script>
 
 <template>
@@ -20,7 +59,7 @@ defineEmits<{ navigate: [view: string] }>()
       Plan, organize, and write your novel faster.
     </p>
 
-    <div class="mt-10 flex w-72 flex-col gap-3">
+    <div v-if="!projectStore.project" class="mt-10 flex w-72 flex-col gap-3">
       <AppButton
         variant="bordered"
         size="lg"
@@ -52,6 +91,37 @@ defineEmits<{ navigate: [view: string] }>()
       >
         Settings
       </AppButton>
+    </div>
+
+    <!-- Grouped menus shown only when a project is open -->
+    <div v-else class="relative mt-10 flex flex-wrap items-start justify-center gap-3">
+      <template v-for="(menu, index) in menus" :key="menu.label">
+        <div class="relative">
+          <AppButton
+            variant="bordered"
+            size="lg"
+            @click="toggleMenu(index)"
+          >
+            {{ menu.label }}
+            <span class="text-xs text-slate-400">▾</span>
+          </AppButton>
+
+          <div
+            v-if="openMenu === index"
+            class="absolute left-0 top-full z-20 mt-2 w-52 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg"
+          >
+            <button
+              v-for="item in menu.items"
+              :key="item.view"
+              type="button"
+              class="block w-full cursor-pointer px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+              @click="selectItem(item.view)"
+            >
+              {{ item.label }}
+            </button>
+          </div>
+        </div>
+      </template>
     </div>
   </main>
 </template>

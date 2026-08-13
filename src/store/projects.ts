@@ -3,11 +3,6 @@ import { Project } from "../libs/models/Project";
 import { ref } from "vue";
 import { Character } from "../libs/models/Character";
 
-type ProjectStore = {
-    project: Project | null,
-    edited: boolean
-}
-
 export const useProjectStore = defineStore('projects',() => {
     const project = ref<Project | null>(null)
 
