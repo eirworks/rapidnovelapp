@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import AppButton from './ui/AppButton.vue'
+
 defineEmits<{ navigate: [view: string] }>()
 </script>
 
@@ -19,33 +21,37 @@ defineEmits<{ navigate: [view: string] }>()
     </p>
 
     <div class="mt-10 flex w-72 flex-col gap-3">
-      <button
-        class="cursor-pointer rounded-lg border border-slate-300 bg-white px-4 py-3 font-bold text-slate-800 shadow-sm transition hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+      <AppButton
+        variant="bordered"
+        size="lg"
         @click="$emit('navigate', 'quick-write')"
       >
         Quick Write
-      </button>
+      </AppButton>
 
-      <button
-        class="cursor-pointer rounded-lg bg-indigo-600 px-4 py-3 font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+      <AppButton
+        variant="primary"
+        size="lg"
         @click="$emit('navigate', 'new-project')"
       >
         New Project
-      </button>
+      </AppButton>
 
-      <button
-        class="cursor-pointer rounded-lg border border-slate-300 bg-white px-4 py-3 font-medium text-slate-700 shadow-sm transition hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+      <AppButton
+        variant="bordered"
+        size="lg"
         @click="$emit('navigate', 'open-project')"
       >
         Open Project
-      </button>
+      </AppButton>
 
-      <button
-        class="cursor-pointer rounded-lg border border-slate-300 bg-white px-4 py-3 font-medium text-slate-700 shadow-sm transition hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+      <AppButton
+        variant="bordered"
+        size="lg"
         @click="$emit('navigate', 'settings')"
       >
         Settings
-      </button>
+      </AppButton>
     </div>
   </main>
 </template>

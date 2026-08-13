@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
+import AppButton from './ui/AppButton.vue'
+import AppTabs from './ui/AppTabs.vue'
+import AppTextField from './ui/AppTextField.vue'
 
 type Theme = 'auto' | 'dark' | 'light'
 type SettingsTab = 'app' | 'ai'
@@ -188,30 +191,13 @@ async function deleteProvider() {
     <div class="mx-auto max-w-4xl">
       <div class="flex items-center justify-between">
         <h1 class="text-3xl font-bold tracking-tight text-slate-900">Settings</h1>
-        <button
-          class="cursor-pointer rounded-lg border border-slate-300 bg-white px-4 py-2 font-medium text-slate-700 shadow-sm transition hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-          @click="$emit('back')"
-        >
+        <AppButton variant="bordered" @click="$emit('back')">
           ← Back
-        </button>
+        </AppButton>
       </div>
 
       <!-- Tabs -->
-      <div class="mt-6 flex gap-1 border-b border-slate-200">
-        <button
-          v-for="t in tabs"
-          :key="t.id"
-          class="cursor-pointer rounded-t-lg border-b-2 px-4 py-2.5 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-          :class="
-            tab === t.id
-              ? 'border-indigo-600 bg-white text-indigo-700'
-              : 'border-transparent text-slate-500 hover:bg-white/60 hover:text-slate-700'
-          "
-          @click="tab = t.id"
-        >
-          {{ t.label }}
-        </button>
-      </div>
+      <AppTabs v-model="tab" :tabs="tabs" class="mt-6" />
 
       <!-- ================= App tab ================= -->
       <div v-if="tab === 'app'" class="mt-8 space-y-8">
@@ -275,13 +261,13 @@ async function deleteProvider() {
           </div>
           <p v-if="error" class="text-sm font-medium text-red-600">{{ error }}</p>
 
-          <button
-            class="w-full cursor-pointer rounded-lg bg-indigo-600 px-4 py-3 font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 disabled:opacity-50"
+          <AppButton
+            block
             :disabled="saving"
             @click="save"
           >
             {{ saving ? 'Saving…' : 'Save Settings' }}
-          </button>
+          </AppButton>
         </template>
       </div>
 
@@ -360,11 +346,10 @@ async function deleteProvider() {
                   <label class="block text-sm font-medium text-slate-700">
                     Name
                   </label>
-                  <input
+                  <AppTextField
                     v-model="form.name"
-                    type="text"
                     placeholder="e.g. OpenRouter"
-                    class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                    class="mt-1"
                   />
                 </div>
 
@@ -372,11 +357,11 @@ async function deleteProvider() {
                   <label class="block text-sm font-medium text-slate-700">
                     Base URL
                   </label>
-                  <input
+                  <AppTextField
                     v-model="form.baseUrl"
-                    type="text"
                     placeholder="https://api.example.com/v1"
-                    class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 font-mono text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                    mono
+                    class="mt-1"
                   />
                 </div>
 
@@ -384,33 +369,37 @@ async function deleteProvider() {
                   <label class="block text-sm font-medium text-slate-700">
                     API Key
                   </label>
-                  <div class="relative mt-1">
-                    <input
-                      v-model="form.apiKey"
-                      :type="showApiKey ? 'text' : 'password'"
-                      placeholder="sk-…"
-                      class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 pr-16 font-mono text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
-                    />
-                    <button
-                      type="button"
-                      class="absolute inset-y-0 right-0 cursor-pointer rounded-r-lg px-3 text-xs font-semibold text-slate-500 transition hover:text-indigo-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-                      @click="showApiKey = !showApiKey"
-                    >
-                      {{ showApiKey ? 'Hide' : 'Show' }}
-                    </button>
-                  </div>
+                  <AppTextField
+                    v-model="form.apiKey"
+                    :type="showApiKey ? 'text' : 'password'"
+                    placeholder="sk-…"
+                    mono
+                    class="mt-1"
+                  >
+                    <template #trailing>
+                      <AppButton
+                        variant="text"
+                        size="sm"
+                        @click="showApiKey = !showApiKey"
+                      >
+                        {{ showApiKey ? 'Hide' : 'Show' }}
+                      </AppButton>
+                    </template>
+                  </AppTextField>
                 </div>
 
                 <div>
                   <label class="block text-sm font-medium text-slate-700">
                     Models
                   </label>
-                  <textarea
+                  <AppTextField
                     v-model="form.modelsText"
-                    rows="4"
+                    multiline
+                    :rows="4"
                     placeholder="gpt-4o&#10;claude-3.5-sonnet"
-                    class="mt-1 w-full resize-y rounded-lg border border-slate-300 bg-white px-3 py-2 font-mono text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
-                  ></textarea>
+                    mono
+                    class="mt-1"
+                  />
                   <p class="mt-1 text-xs text-slate-500">
                     One model per line (or comma-separated).
                   </p>
@@ -421,26 +410,23 @@ async function deleteProvider() {
                 </p>
 
                 <div class="flex items-center gap-3 pt-1">
-                  <button
-                    class="cursor-pointer rounded-lg bg-indigo-600 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 disabled:opacity-50"
+                  <AppButton
                     :disabled="formSaving"
                     @click="saveProvider"
                   >
                     {{ formSaving ? 'Saving…' : 'Save Provider' }}
-                  </button>
-                  <button
-                    class="cursor-pointer rounded-lg border border-slate-300 bg-white px-4 py-2 font-medium text-slate-700 shadow-sm transition hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-                    @click="cancelEdit"
-                  >
+                  </AppButton>
+                  <AppButton variant="bordered" @click="cancelEdit">
                     Cancel
-                  </button>
-                  <button
+                  </AppButton>
+                  <AppButton
                     v-if="!form.isNew && selectedId"
-                    class="ml-auto cursor-pointer rounded-lg border border-red-200 bg-white px-4 py-2 font-medium text-red-600 shadow-sm transition hover:bg-red-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+                    variant="danger"
+                    class="ml-auto"
                     @click="deleteProvider"
                   >
                     Delete
-                  </button>
+                  </AppButton>
                 </div>
               </div>
             </div>
