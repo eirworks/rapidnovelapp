@@ -6,8 +6,8 @@ export class Place {
     description: string = ""
     parentId: string | null = null 
 
-    constructor(id: string, name: string) {
-        this.id = id
+    constructor(name: string) {
+        this.id = crypto.randomUUID()
         this.name = name
     }
 } 

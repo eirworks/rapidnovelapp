@@ -1,5 +1,3 @@
-import { randomUUID } from "crypto"
-
 export class Character {
     id: string // UUID
     firstName: string
@@ -13,7 +11,7 @@ export class Character {
     data: Map<string, string> = new Map()
 
     constructor(firstName: string, lastName: string, isFemale: boolean) {
-        this.id = randomUUID()
+        this.id = crypto.randomUUID()
         this.firstName = firstName
         this.lastName = lastName
         this.isFemale = isFemale
