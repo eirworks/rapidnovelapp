@@ -90,24 +90,24 @@ function createApplicationMenu() {
         { role: 'quit' },
       ],
     },
-    {
-      label: 'Database',
-      submenu: [
-        { label: 'Characters', click: () => sendMenuAction('characters') },
-        { label: 'Places', click: () => sendMenuAction('places') },
-        { label: 'Items', click: () => sendMenuAction('items') },
-        { label: 'Timeline', click: () => sendMenuAction('timeline') },
-        { label: 'Plots', click: () => sendMenuAction('plots') },
-      ],
-    },
-    {
-      label: 'Write',
-      submenu: [
-        { label: 'Draft', click: () => sendMenuAction('draft') },
-        { label: 'Story', click: () => sendMenuAction('story') },
-        { label: 'Chapters', click: () => sendMenuAction('chapters') },
-      ],
-    },
+    // {
+    //   label: 'Database',
+    //   submenu: [
+    //     { label: 'Characters', click: () => sendMenuAction('characters') },
+    //     { label: 'Places', click: () => sendMenuAction('places') },
+    //     { label: 'Items', click: () => sendMenuAction('items') },
+    //     { label: 'Timeline', click: () => sendMenuAction('timeline') },
+    //     { label: 'Plots', click: () => sendMenuAction('plots') },
+    //   ],
+    // },
+    // {
+    //   label: 'Write',
+    //   submenu: [
+    //     { label: 'Draft', click: () => sendMenuAction('draft') },
+    //     { label: 'Story', click: () => sendMenuAction('story') },
+    //     { label: 'Chapters', click: () => sendMenuAction('chapters') },
+    //   ],
+    // },
     {
       label: 'Help',
       submenu: [
