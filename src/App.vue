@@ -1,49 +1,18 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import AboutDialog from './components/AboutDialog.vue'
-import HomeView from './components/HomeView.vue'
-import PlaceholderView from './components/PlaceholderView.vue'
-import SettingsView from './components/SettingsView.vue'
 
-type ViewId =
-  | 'home'
-  | 'quick-write'
-  | 'new-project'
-  | 'open-project'
-  | 'save-project'
-  | 'settings'
-  | 'characters'
-  | 'places'
-  | 'items'
-  | 'timeline'
-  | 'plots'
-  | 'draft'
-  | 'story'
-  | 'chapters'
-  | 'help'
-
-const titles: Record<Exclude<ViewId, 'home'>, string> = {
-  'quick-write': 'Quick Write',
-  'new-project': 'New Project',
-  'open-project': 'Open Project',
-  'save-project': 'Save Project',
-  settings: 'Settings',
-  characters: 'Characters',
-  places: 'Places',
-  items: 'Items',
-  timeline: 'Timeline',
-  plots: 'Plots',
-  draft: 'Draft',
-  story: 'Story',
-  chapters: 'Chapters',
-  help: 'Help',
-}
-
-const view = ref<ViewId>('home')
+const router = useRouter()
 const aboutOpen = ref(false)
 
-function navigate(v: string) {
-  if (v === 'home' || v in titles) view.value = v as ViewId
+/** Navigate to a route by name. Names match the Electron menu-action ids. */
+function navigate(view: string) {
+  router.push({ name: view })
+}
+
+function goHome() {
+  navigate('home')
 }
 
 function onMenuAction(_event: unknown, action: string) {
@@ -59,9 +28,7 @@ onBeforeUnmount(() => window.ipcRenderer?.off('menu-action', onMenuAction))
 </script>
 
 <template>
-  <HomeView v-if="view === 'home'" @navigate="navigate" />
-  <SettingsView v-else-if="view === 'settings'" @back="navigate('home')" />
-  <PlaceholderView v-else :title="titles[view]" @back="navigate('home')" />
+  <router-view @navigate="navigate" @back="goHome" />
 
   <AboutDialog v-if="aboutOpen" @close="aboutOpen = false" />
 </template>
