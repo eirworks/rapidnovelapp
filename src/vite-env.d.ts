@@ -35,4 +35,16 @@ interface Window {
     updateAiProvider(provider: AiProvider): Promise<AiProvider>
     deleteAiProvider(id: string): Promise<void>
   }
+  aiApi: {
+    run(req: {
+      providerId: string
+      model: string
+      systemPrompt: string
+      text: string
+    }): Promise<string>
+  }
+  quickWriteApi: {
+    save(content: string): Promise<{ path: string } | null>
+    load(): Promise<{ path: string; content: string } | null>
+  }
 }

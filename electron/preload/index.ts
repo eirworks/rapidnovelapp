@@ -14,6 +14,24 @@ contextBridge.exposeInMainWorld('configApi', {
     ipcRenderer.invoke('config:deleteAiProvider', id),
 })
 
+// --------- Expose AI run API to the Renderer process ---------
+contextBridge.exposeInMainWorld('aiApi', {
+  run: (req: {
+    providerId: string
+    model: string
+    systemPrompt: string
+    text: string
+  }): Promise<string> => ipcRenderer.invoke('ai:run', req),
+})
+
+// --------- Expose Quick Write file API to the Renderer process ---------
+contextBridge.exposeInMainWorld('quickWriteApi', {
+  save: (content: string): Promise<{ path: string } | null> =>
+    ipcRenderer.invoke('quickwrite:save', content),
+  load: (): Promise<{ path: string; content: string } | null> =>
+    ipcRenderer.invoke('quickwrite:load'),
+})
+
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld('ipcRenderer', {
   on(...args: Parameters<typeof ipcRenderer.on>) {

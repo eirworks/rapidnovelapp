@@ -3,6 +3,7 @@ import type { RouteRecordRaw } from 'vue-router'
 
 import HomeView from '../components/HomeView.vue'
 import PlaceholderView from '../components/PlaceholderView.vue'
+import QuickWriteView from '../components/QuickWriteView.vue'
 import SettingsView from '../components/SettingsView.vue'
 
 /**
@@ -11,7 +12,6 @@ import SettingsView from '../components/SettingsView.vue'
  * main process menu can navigate by sending the same identifier.
  */
 const placeholderTitles: Record<string, string> = {
-  'quick-write': 'Quick Write',
   'new-project': 'New Project',
   'open-project': 'Open Project',
   'save-project': 'Save Project',
@@ -29,6 +29,7 @@ const placeholderTitles: Record<string, string> = {
 const routes: RouteRecordRaw[] = [
   { path: '/', name: 'home', component: HomeView },
   { path: '/settings', name: 'settings', component: SettingsView },
+  { path: '/quick-write', name: 'quick-write', component: QuickWriteView },
   ...Object.entries(placeholderTitles).map(
     ([name, title]): RouteRecordRaw => ({
       path: `/${name}`,
