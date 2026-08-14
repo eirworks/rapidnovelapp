@@ -1,12 +1,7 @@
-import { app, BrowserWindow, ipcMain, shell, Menu, type MenuItemConstructorOptions } from 'electron'
-import { randomUUID } from 'node:crypto'
+import { app, BrowserWindow, ipcMain, nativeTheme, shell, Menu, type MenuItemConstructorOptions } from 'electron'
 import { createRequire } from 'node:module'
-import {
-  getConfig,
-  initConfig,
-  updateConfig,
-  type AiProvider,
-} from '../config'
+import { getConfig, initConfig, updateConfig, type Theme } from '../config'
+import { registerAiProviderIpc } from './ipc/aiProviders'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import os from 'node:os'
@@ -48,6 +43,14 @@ if (!app.requestSingleInstanceLock()) {
 let win: BrowserWindow | null = null
 const preload = path.join(__dirname, '../preload/index.mjs')
 const indexHtml = path.join(RENDERER_DIST, 'index.html')
+
+/**
+ * Tells Electron (and therefore the renderer's `prefers-color-scheme`) which
+ * color scheme to use. `auto` follows the OS; `dark`/`light` are forced.
+ */
+function applyTheme(theme: Theme) {
+  nativeTheme.themeSource = theme === 'auto' ? 'system' : theme
+}
 
 // Forward a menu action to the renderer so it can switch views
 function sendMenuAction(action: string) {
@@ -133,12 +136,18 @@ async function createWindow() {
       // Read more on https://www.electronjs.org/docs/latest/tutorial/context-isolation
       // contextIsolation: false,
     },
+    // Match the app background so there's no white flash when launching in dark mode.
+    backgroundColor: nativeTheme.shouldUseDarkColors ? '#020617' : '#f8fafc',
   })
+
+  win.maximize()
 
   if (VITE_DEV_SERVER_URL) { // #298
     win.loadURL(VITE_DEV_SERVER_URL)
     // Open devTool if the app is not packaged
-    win.webContents.openDevTools()
+    win.webContents.openDevTools({
+      mode: 'detach',
+    })
   } else {
     win.loadFile(indexHtml)
   }
@@ -153,13 +162,15 @@ async function createWindow() {
 
 app.whenReady().then(() => {
   initConfig()
+  applyTheme(getConfig().theme)
   registerConfigIpc()
+  registerAiProviderIpc()
   createApplicationMenu()
   createWindow()
 })
 
-// Config IPC: the Settings page may read everything but only change
-// non-hidden values (theme, AI providers). Hidden values are managed by app logic.
+// Config IPC: the Settings page may read everything but only change the
+// non-hidden theme value. Hidden values are managed by app logic.
 function registerConfigIpc() {
   ipcMain.handle('config:get', () => getConfig())
 
@@ -168,78 +179,10 @@ function registerConfigIpc() {
     if (theme !== 'auto' && theme !== 'dark' && theme !== 'light') {
       throw new Error('config:update only accepts a valid theme')
     }
-    return updateConfig({ theme })
+    const config = updateConfig({ theme })
+    applyTheme(config.theme)
+    return config
   })
-
-  ipcMain.handle(
-    'config:addAiProvider',
-    (_event, input: unknown): AiProvider => {
-      const provider = sanitizeAiProvider(input, /* requireId */ false)
-      const config = getConfig()
-      const created: AiProvider = {
-        ...provider,
-        id: randomUUID(),
-        models: [...provider.models],
-      }
-      const next = updateConfig({
-        aiProviders: [...config.aiProviders, created],
-      })
-      return next.aiProviders.find((p) => p.id === created.id) ?? created
-    },
-  )
-
-  ipcMain.handle(
-    'config:updateAiProvider',
-    (_event, input: unknown): AiProvider => {
-      const provider = sanitizeAiProvider(input, /* requireId */ true)
-      const config = getConfig()
-      if (!config.aiProviders.some((p) => p.id === provider.id)) {
-        throw new Error('Provider not found')
-      }
-      const aiProviders = config.aiProviders.map((p) =>
-        p.id === provider.id ? { ...provider, models: [...provider.models] } : p,
-      )
-      const next = updateConfig({ aiProviders })
-      return next.aiProviders.find((p) => p.id === provider.id) ?? provider
-    },
-  )
-
-  ipcMain.handle('config:deleteAiProvider', (_event, id: unknown) => {
-    if (typeof id !== 'string' || id.trim() === '') {
-      throw new Error('Invalid provider id')
-    }
-    const config = getConfig()
-    const aiProviders = config.aiProviders.filter((p) => p.id !== id)
-    updateConfig({ aiProviders })
-  })
-}
-
-/** Validates a provider payload from the renderer and normalizes its fields. */
-function sanitizeAiProvider(input: unknown, requireId: boolean): AiProvider {
-  const raw =
-    (typeof input === 'object' && input !== null ? input : {}) as Record<
-      string,
-      unknown
-    >
-
-  const name = typeof raw.name === 'string' ? raw.name.trim() : ''
-  if (!name) throw new Error('Provider name is required')
-
-  const baseUrl = typeof raw.baseUrl === 'string' ? raw.baseUrl.trim() : ''
-  if (!baseUrl) throw new Error('Base URL is required')
-  if (!/^https?:\/\//i.test(baseUrl)) {
-    throw new Error('Base URL must start with http:// or https://')
-  }
-
-  const apiKey = typeof raw.apiKey === 'string' ? raw.apiKey : ''
-  const models = Array.isArray(raw.models)
-    ? raw.models.filter((m): m is string => typeof m === 'string')
-    : []
-
-  const id = requireId ? (typeof raw.id === 'string' ? raw.id : '') : ''
-  if (requireId && !id) throw new Error('Provider id is required')
-
-  return { id, name, baseUrl, apiKey, models }
 }
 
 app.on('window-all-closed', () => {
