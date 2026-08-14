@@ -20,10 +20,10 @@ const variantClass: Record<string, string> = {
   primary:
     'bg-indigo-600 font-semibold text-white shadow-sm hover:bg-indigo-700 focus-visible:ring-indigo-500',
   bordered:
-    'border border-slate-300 bg-white font-medium text-slate-700 shadow-sm hover:bg-slate-100 focus-visible:ring-indigo-500',
+    'border border-slate-300 bg-white font-medium text-slate-700 shadow-sm hover:bg-slate-100 focus-visible:ring-indigo-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700',
   danger:
-    'border border-red-200 bg-white font-medium text-red-600 shadow-sm hover:bg-red-50 focus-visible:ring-red-500',
-  text: 'font-semibold text-indigo-600 hover:bg-indigo-50 focus-visible:ring-indigo-500',
+    'border border-red-200 bg-white font-medium text-red-600 shadow-sm hover:bg-red-50 focus-visible:ring-red-500 dark:border-red-900 dark:bg-slate-800 dark:text-red-400 dark:hover:bg-red-950',
+  text: 'font-semibold text-indigo-600 hover:bg-indigo-50 focus-visible:ring-indigo-500 dark:hover:bg-indigo-950',
 }
 
 const sizeClass: Record<string, string> = {

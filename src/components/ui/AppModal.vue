@@ -42,12 +42,12 @@ onBeforeUnmount(() => {
       aria-modal="true"
       :aria-labelledby="labelId || (title ? 'app-modal-title' : undefined)"
       tabindex="-1"
-      class="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-xl outline-none"
+      class="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-xl outline-none dark:border-slate-700 dark:bg-slate-800"
     >
       <h2
         v-if="title"
         id="app-modal-title"
-        class="text-2xl font-bold tracking-tight text-slate-900"
+        class="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50"
       >
         {{ title }}
       </h2>

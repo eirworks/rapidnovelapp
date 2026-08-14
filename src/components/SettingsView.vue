@@ -187,10 +187,10 @@ async function deleteProvider() {
 </script>
 
 <template>
-  <main class="min-h-screen bg-slate-50 px-4 py-8">
+  <main class="min-h-screen bg-slate-50 px-4 py-8 dark:bg-slate-950">
     <div class="mx-auto max-w-4xl">
       <div class="flex items-center justify-between">
-        <h1 class="text-3xl font-bold tracking-tight text-slate-900">Settings</h1>
+        <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-50">Settings</h1>
         <AppButton variant="bordered" @click="$emit('back')">
           ← Back
         </AppButton>
@@ -201,13 +201,15 @@ async function deleteProvider() {
 
       <!-- ================= App tab ================= -->
       <div v-if="tab === 'app'" class="mt-8 space-y-8">
-        <p v-if="loading" class="text-slate-500">Loading settings…</p>
+        <p v-if="loading" class="text-slate-500 dark:text-slate-400">Loading settings…</p>
 
         <template v-else>
           <!-- Editable: non-hidden settings -->
-          <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="text-lg font-semibold text-slate-900">Appearance</h2>
-            <p class="mt-1 text-sm text-slate-500">Theme is not applied yet.</p>
+          <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-50">Appearance</h2>
+            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              Choose how the app looks. Auto follows your system preference.
+            </p>
 
             <div class="mt-4 grid grid-cols-3 gap-3">
               <button
@@ -216,18 +218,18 @@ async function deleteProvider() {
                 class="cursor-pointer rounded-lg border px-3 py-3 text-center transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                 :class="
                   theme === t.value
-                    ? 'border-indigo-600 bg-indigo-50 ring-1 ring-indigo-600'
-                    : 'border-slate-300 bg-white hover:bg-slate-50'
+                    ? 'border-indigo-600 bg-indigo-50 ring-1 ring-indigo-600 dark:bg-indigo-950'
+                    : 'border-slate-300 bg-white hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:hover:bg-slate-700'
                 "
                 @click="theme = t.value"
               >
                 <span
                   class="block font-semibold"
-                  :class="theme === t.value ? 'text-indigo-700' : 'text-slate-800'"
+                  :class="theme === t.value ? 'text-indigo-700 dark:text-indigo-400' : 'text-slate-800 dark:text-slate-100'"
                 >
                   {{ t.label }}
                 </span>
-                <span class="mt-1 block text-xs text-slate-500">
+                <span class="mt-1 block text-xs text-slate-500 dark:text-slate-400">
                   {{ t.description }}
                 </span>
               </button>
@@ -235,19 +237,19 @@ async function deleteProvider() {
           </section>
 
           <!-- Hidden: shown read-only, not editable -->
-          <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="text-lg font-semibold text-slate-900">Storage</h2>
-            <p class="mt-1 text-sm text-slate-500">
+          <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-50">Storage</h2>
+            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
               Managed by the app. Displayed for reference only.
             </p>
 
             <dl class="mt-4 space-y-3">
               <div>
-                <dt class="text-sm font-medium text-slate-700">
+                <dt class="text-sm font-medium text-slate-700 dark:text-slate-300">
                   Last Quick Write directory
                 </dt>
                 <dd
-                  class="mt-1 truncate rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 font-mono text-sm text-slate-500"
+                  class="mt-1 truncate rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 font-mono text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400"
                   :title="quickWriteDir"
                 >
                   {{ quickWriteDir || 'Not set yet' }}
@@ -256,10 +258,10 @@ async function deleteProvider() {
             </dl>
           </section>
 
-          <div v-if="saved" class="text-sm font-medium text-emerald-600">
+          <div v-if="saved" class="text-sm font-medium text-emerald-600 dark:text-emerald-500">
             ✓ Settings saved
           </div>
-          <p v-if="error" class="text-sm font-medium text-red-600">{{ error }}</p>
+          <p v-if="error" class="text-sm font-medium text-red-600 dark:text-red-400">{{ error }}</p>
 
           <AppButton
             block
@@ -273,13 +275,13 @@ async function deleteProvider() {
 
       <!-- ================= AI tab ================= -->
       <div v-else class="mt-8">
-        <p v-if="aiLoading" class="text-slate-500">Loading AI providers…</p>
+        <p v-if="aiLoading" class="text-slate-500 dark:text-slate-400">Loading AI providers…</p>
 
         <div v-else class="flex items-start gap-6">
           <!-- Provider sidebar -->
           <aside class="w-64 shrink-0">
             <div
-              class="flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+              class="flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800"
             >
               <ul
                 v-if="providers.length > 0"
@@ -290,21 +292,21 @@ async function deleteProvider() {
                     class="w-full border-l-2 px-4 py-3 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500"
                     :class="
                       selectedId === p.id
-                        ? 'border-indigo-600 bg-indigo-50'
-                        : 'border-transparent hover:bg-slate-50'
+                        ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-950'
+                        : 'border-transparent hover:bg-slate-50 dark:hover:bg-slate-700'
                     "
                     @click="selectProvider(p.id)"
                   >
                     <span
                       class="block truncate text-sm font-semibold"
                       :class="
-                        selectedId === p.id ? 'text-indigo-700' : 'text-slate-800'
+                        selectedId === p.id ? 'text-indigo-700 dark:text-indigo-400' : 'text-slate-800 dark:text-slate-100'
                       "
                     >
                       {{ p.name }}
                     </span>
                     <span
-                      class="mt-0.5 block truncate font-mono text-xs text-slate-500"
+                      class="mt-0.5 block truncate font-mono text-xs text-slate-500 dark:text-slate-400"
                       :title="p.baseUrl"
                     >
                       {{ p.baseUrl || 'No base URL' }}
@@ -312,12 +314,12 @@ async function deleteProvider() {
                   </button>
                 </li>
               </ul>
-              <p v-else class="px-4 py-8 text-center text-sm text-slate-500">
+              <p v-else class="px-4 py-8 text-center text-sm text-slate-500 dark:text-slate-400">
                 No providers yet.
               </p>
 
               <button
-                class="cursor-pointer border-t border-dashed border-slate-300 px-4 py-3 text-sm font-semibold text-indigo-600 transition hover:bg-indigo-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500"
+                class="cursor-pointer border-t border-dashed border-slate-300 px-4 py-3 text-sm font-semibold text-indigo-600 transition hover:bg-indigo-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500 dark:border-slate-600 dark:hover:bg-indigo-950"
                 @click="startNewProvider"
               >
                 + Add Provider
@@ -328,12 +330,12 @@ async function deleteProvider() {
           <!-- Provider form -->
           <section class="min-w-0 flex-1">
             <div
-              class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+              class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800"
             >
-              <h2 class="text-lg font-semibold text-slate-900">
+              <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-50">
                 {{ form.isNew ? 'New Provider' : 'Edit Provider' }}
               </h2>
-              <p class="mt-1 text-sm text-slate-500">
+              <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 {{
                   form.isNew
                     ? 'Fill in the details, then save to add it.'
@@ -343,7 +345,7 @@ async function deleteProvider() {
 
               <div class="mt-5 space-y-4">
                 <div>
-                  <label class="block text-sm font-medium text-slate-700">
+                  <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
                     Name
                   </label>
                   <AppTextField
@@ -354,7 +356,7 @@ async function deleteProvider() {
                 </div>
 
                 <div>
-                  <label class="block text-sm font-medium text-slate-700">
+                  <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
                     Base URL
                   </label>
                   <AppTextField
@@ -366,7 +368,7 @@ async function deleteProvider() {
                 </div>
 
                 <div>
-                  <label class="block text-sm font-medium text-slate-700">
+                  <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
                     API Key
                   </label>
                   <AppTextField
@@ -389,7 +391,7 @@ async function deleteProvider() {
                 </div>
 
                 <div>
-                  <label class="block text-sm font-medium text-slate-700">
+                  <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
                     Models
                   </label>
                   <AppTextField
@@ -400,12 +402,12 @@ async function deleteProvider() {
                     mono
                     class="mt-1"
                   />
-                  <p class="mt-1 text-xs text-slate-500">
+                  <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
                     One model per line (or comma-separated).
                   </p>
                 </div>
 
-                <p v-if="formError" class="text-sm font-medium text-red-600">
+                <p v-if="formError" class="text-sm font-medium text-red-600 dark:text-red-400">
                   {{ formError }}
                 </p>
 
@@ -433,7 +435,7 @@ async function deleteProvider() {
           </section>
         </div>
 
-        <p v-if="aiError" class="mt-4 text-sm font-medium text-red-600">
+        <p v-if="aiError" class="mt-4 text-sm font-medium text-red-600 dark:text-red-400">
           {{ aiError }}
         </p>
       </div>

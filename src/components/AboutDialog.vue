@@ -15,7 +15,7 @@ defineEmits<{ close: [] }>()
 
     <h2
       id="about-title"
-      class="mt-4 text-2xl font-bold tracking-tight text-slate-900"
+      class="mt-4 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50"
     >
       RapidNovel
     </h2>
@@ -23,7 +23,7 @@ defineEmits<{ close: [] }>()
       Plan, organize, and write your novel faster.
     </p>
 
-    <p class="mt-4 text-sm leading-relaxed text-slate-500">
+    <p class="mt-4 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
       RapidNovel helps you keep track of characters, places, items, and
       timelines while you draft your story — all in one place.
     </p>

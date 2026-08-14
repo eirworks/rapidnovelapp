@@ -45,9 +45,9 @@ function selectItem(view: string) {
 
 <template>
   <main
-    class="flex min-h-screen flex-col items-center justify-center bg-slate-50 px-4 text-center"
+    class="flex min-h-screen flex-col items-center justify-center bg-slate-50 px-4 text-center dark:bg-slate-950"
   >
-    <h1 class="text-4xl font-bold tracking-tight text-slate-900">
+    <h1 class="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
       Welcome to
       <span
         class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent drop-shadow-sm"
@@ -55,7 +55,7 @@ function selectItem(view: string) {
         RapidNovel
       </span>
     </h1>
-    <p class="mt-3 text-slate-500">
+    <p class="mt-3 text-slate-500 dark:text-slate-400">
       Plan, organize, and write your novel faster.
     </p>
 
@@ -103,18 +103,18 @@ function selectItem(view: string) {
             @click="toggleMenu(index)"
           >
             {{ menu.label }}
-            <span class="text-xs text-slate-400">▾</span>
+            <span class="text-xs text-slate-400 dark:text-slate-500">▾</span>
           </AppButton>
 
           <div
             v-if="openMenu === index"
-            class="absolute left-0 top-full z-20 mt-2 w-52 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg"
+            class="absolute left-0 top-full z-20 mt-2 w-52 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-800"
           >
             <button
               v-for="item in menu.items"
               :key="item.view"
               type="button"
-              class="block w-full cursor-pointer px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+              class="block w-full cursor-pointer px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-slate-100"
               @click="selectItem(item.view)"
             >
               {{ item.label }}
