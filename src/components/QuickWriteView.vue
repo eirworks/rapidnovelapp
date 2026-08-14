@@ -2,39 +2,55 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import AppButton from './ui/AppButton.vue'
-import { AI_ACTIONS, getAiAction } from '../libs/models/AiAction'
+import { AI_ACTIONS } from '../libs/models/AiAction'
+import type { AiAction } from '../libs/models/AiAction'
+import { DraftDocument } from '../libs/models/DraftDocument'
+import type { DraftItem } from '../libs/models/DraftItem'
 import { useQuickWriteStore } from '../store/quickWrite'
 
 defineEmits<{ back: []; navigate: [view: string] }>()
 
-// ---------------- Editor state ----------------
+// ---------------- Document state ----------------
 const quickWriteStore = useQuickWriteStore()
-const { text, currentPath } = storeToRefs(quickWriteStore)
+const { document, currentPath } = storeToRefs(quickWriteStore)
 const fileBusy = ref(false)
 const fileError = ref('')
 
-// ---------------- AI panel state ----------------
+// ---------------- AI provider state ----------------
 const aiLoading = ref(true)
 const providers = ref<AiProvider[]>([])
 const providerId = ref('')
-const actionId = ref('expand')
 const model = ref('')
-const running = ref(false)
-const output = ref('')
 const aiError = ref('')
+const runningItemId = ref<string | null>(null)
+const runningActionId = ref('')
+
+// Auto-grows item textareas so cells expand with their content (no height limit).
+function growTextarea(el: HTMLElement) {
+  el.style.height = 'auto'
+  el.style.height = el.scrollHeight + 'px'
+}
+const vAutoGrow = {
+  mounted: (el: HTMLElement) => growTextarea(el),
+  updated: (el: HTMLElement) => growTextarea(el),
+}
 
 const selectedProvider = computed(() =>
   providers.value.find((p) => p.id === providerId.value),
 )
 const availableModels = computed(() => selectedProvider.value?.models ?? [])
-const selectedAction = computed(() => getAiAction(actionId.value))
-const canRun = computed(
+const canRunAi = computed(
   () =>
-    !running.value &&
-    text.value.trim().length > 0 &&
+    !runningItemId.value &&
     !!selectedProvider.value?.apiKey &&
     model.value !== '',
 )
+
+function isRunning(item: DraftItem, action: AiAction): boolean {
+  return (
+    runningItemId.value === item.id && runningActionId.value === action.id
+  )
+}
 
 onMounted(async () => {
   try {
@@ -58,11 +74,11 @@ watch(providerId, (id) => {
 
 // ---------------- File actions ----------------
 function newDraft() {
-  if (text.value.trim() && !window.confirm('Discard the current text and start a new draft?')) {
+  const hasContent = document.value.items.some((item) => item.data.trim())
+  if (hasContent && !window.confirm('Discard the current draft and start a new one?')) {
     return
   }
   quickWriteStore.reset()
-  output.value = ''
   aiError.value = ''
   fileError.value = ''
 }
@@ -73,9 +89,8 @@ async function loadDraft() {
   try {
     const result = await window.quickWriteApi.load()
     if (result) {
-      text.value = result.content
+      document.value = parseDraft(result.content)
       currentPath.value = result.path
-      output.value = ''
     }
   } catch {
     fileError.value = 'Could not load the file.'
@@ -88,7 +103,7 @@ async function saveDraft() {
   fileBusy.value = true
   fileError.value = ''
   try {
-    const result = await window.quickWriteApi.save(text.value)
+    const result = await window.quickWriteApi.save(serializeDraft())
     if (result) currentPath.value = result.path
   } catch {
     fileError.value = 'Could not save the file.'
@@ -97,28 +112,106 @@ async function saveDraft() {
   }
 }
 
-// ---------------- AI actions ----------------
-async function runAi() {
-  if (!canRun.value || !selectedAction.value) return
-  running.value = true
-  aiError.value = ''
+/** Saves the combined item texts to a plain-text (.txt) file. */
+async function saveDraftTxt() {
+  fileBusy.value = true
+  fileError.value = ''
   try {
-    output.value = await window.aiApi.run({
-      providerId: providerId.value,
-      model: model.value,
-      systemPrompt: selectedAction.value.systemPrompt,
-      text: text.value,
-    })
-  } catch (e) {
-    aiError.value = e instanceof Error ? e.message : 'The AI request failed.'
+    const combined = document.value.items
+      .map((item) => item.data.trimEnd())
+      .filter((text) => text.length > 0)
+      .join('\n\n')
+    await window.quickWriteApi.saveTxt(combined)
+  } catch {
+    fileError.value = 'Could not save the text file.'
   } finally {
-    running.value = false
+    fileBusy.value = false
   }
 }
 
-function applyOutput() {
-  if (!output.value.trim()) return
-  text.value = output.value
+function serializeDraft(): string {
+  return JSON.stringify(document.value.toJSON(), null, 2)
+}
+
+/** Parses a loaded file. Prefers structured JSON, falls back to plain text. */
+function parseDraft(content: string): DraftDocument {
+  try {
+    const doc = DraftDocument.fromJSON(JSON.parse(content))
+    if (doc.items.length === 0) doc.addItem('')
+    return doc
+  } catch {
+    // Legacy/plain-text file: treat the whole content as a single item.
+    const doc = new DraftDocument()
+    doc.addItem(content)
+    return doc
+  }
+}
+
+// ---------------- Item operations ----------------
+function addItemAfter(id?: string) {
+  if (!id) {
+    document.value.addItem('')
+    return
+  }
+  const index = document.value.items.findIndex((item) => item.id === id)
+  document.value.addItem('', index + 1)
+}
+
+function removeItem(id: string) {
+  if (runningItemId.value === id) return
+  document.value.removeItem(id)
+}
+
+function undoItem(item: DraftItem) {
+  if (runningItemId.value === item.id) return
+  item.undo()
+}
+
+// ---------------- AI actions ----------------
+async function runAction(item: DraftItem, action: AiAction) {
+  if (!canRunAi.value) return
+  const text = item.data.trim()
+  if (!text) return
+  runningItemId.value = item.id
+  runningActionId.value = action.id
+  aiError.value = ''
+  try {
+    const result = await window.aiApi.run({
+      providerId: providerId.value,
+      model: model.value,
+      systemPrompt: action.systemPrompt,
+      text: item.data,
+    })
+    // Any action immediately edits the content; the pre-action content is
+    // kept on the item so it can be recovered with one undo step.
+    item.applyAction(action, result)
+  } catch (e) {
+    aiError.value = e instanceof Error ? e.message : 'The AI request failed.'
+  } finally {
+    runningItemId.value = null
+    runningActionId.value = ''
+  }
+}
+
+// ---------------- Drag-to-reorder ----------------
+const dragId = ref<string | null>(null)
+
+function onDragStart(item: DraftItem) {
+  dragId.value = item.id
+}
+
+function onDragEnd() {
+  dragId.value = null
+}
+
+function onDragOver(target: DraftItem) {
+  if (!dragId.value || dragId.value === target.id) return
+  document.value.moveItem(dragId.value, target.id)
+  dragId.value = target.id
+}
+
+function onDrop() {
+  dragId.value = null
 }
 </script>
 
@@ -139,6 +232,9 @@ function applyOutput() {
       <AppButton variant="primary" :disabled="fileBusy" @click="saveDraft">
         {{ fileBusy ? 'Saving…' : 'Save' }}
       </AppButton>
+      <AppButton variant="bordered" :disabled="fileBusy" @click="saveDraftTxt">
+        Save as TXT
+      </AppButton>
 
       <span
         class="ml-2 truncate font-mono text-xs text-slate-500 dark:text-slate-400"
@@ -153,14 +249,98 @@ function applyOutput() {
     </header>
 
     <div class="flex min-h-0 flex-1">
-      <!-- Editor -->
-      <section class="flex min-w-0 flex-1 flex-col">
-        <textarea
-          v-model="text"
-          spellcheck="true"
-          placeholder="Start writing…"
-          class="w-full flex-1 resize-none bg-transparent px-5 py-4 text-base leading-relaxed text-slate-900 placeholder:text-slate-400 focus:outline-none dark:text-slate-50 dark:placeholder:text-slate-500"
-        ></textarea>
+      <!-- Notebook -->
+      <section class="min-w-0 flex-1 overflow-y-auto">
+        <div class="w-full p-4">
+          <div
+            v-for="item in document.items"
+            :key="item.id"
+            class="group pt-5"
+            @dragover.prevent="onDragOver(item)"
+            @drop.prevent="onDrop"
+          >
+            <!-- Drag handle on top -->
+            <div class="flex items-center px-2 pb-1">
+              <span
+                draggable="true"
+                title="Drag to reorder"
+                class="cursor-grab select-none text-base leading-none text-slate-400 hover:text-slate-600 active:cursor-grabbing dark:text-slate-500 dark:hover:text-slate-300"
+                @dragstart="onDragStart(item)"
+                @dragend="onDragEnd"
+              >
+                ⋮⋮
+              </span>
+              <span
+                v-if="runningItemId === item.id"
+                class="ml-2 text-xs font-medium text-indigo-600 dark:text-indigo-400"
+              >
+                Running AI action…
+              </span>
+            </div>
+
+            <!-- Item content: blends with background, highlighted only when active -->
+            <textarea
+              v-model="item.data"
+              v-auto-grow
+              spellcheck="true"
+              :disabled="!!runningItemId"
+              placeholder="Start writing this item…"
+              class="w-full rounded-xl bg-transparent px-4 py-3 text-base leading-relaxed text-slate-900 placeholder:text-slate-400 focus:bg-slate-100 focus:outline-none disabled:cursor-not-allowed dark:text-slate-50 dark:placeholder:text-slate-500 dark:focus:bg-slate-800/60"
+            ></textarea>
+
+            <!-- Bottom toolbar: AI actions left, add item far right -->
+            <div class="flex flex-wrap items-center gap-1 px-1 py-1.5">
+              <button
+                v-for="action in AI_ACTIONS"
+                :key="action.id"
+                class="rounded-md px-2 py-0.5 text-xs font-medium text-slate-500 hover:bg-slate-100 hover:text-indigo-700 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-500 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-indigo-300 dark:disabled:hover:bg-transparent dark:disabled:hover:text-slate-400"
+                :disabled="!canRunAi || !item.data.trim() || (!!runningItemId && runningItemId !== item.id)"
+                :title="action.description"
+                @click="runAction(item, action)"
+              >
+                {{ isRunning(item, action) ? '…' : action.label }}
+              </button>
+
+              <button
+                v-if="item.hasUndo"
+                class="rounded-md px-2 py-0.5 text-xs font-medium text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-slate-800"
+                title="Undo the last AI action"
+                @click="undoItem(item)"
+              >
+                ↩ Undo
+              </button>
+
+              <span class="flex-1"></span>
+
+              <button
+                class="rounded-md px-2 py-0.5 text-xs text-slate-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-slate-800 dark:hover:text-red-400"
+                title="Delete item"
+                :disabled="runningItemId === item.id"
+                @click="removeItem(item.id)"
+              >
+                ✕
+              </button>
+
+              <button
+                class="rounded-md px-2 py-0.5 text-xs font-medium text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-slate-800"
+                title="Add an item after this one"
+                @click="addItemAfter(item.id)"
+              >
+                ＋ Add item
+              </button>
+            </div>
+          </div>
+
+          <!-- Empty state: still need a way to add the first item -->
+          <div
+            v-if="document.items.length === 0"
+            class="flex justify-center pt-10"
+          >
+            <AppButton variant="bordered" @click="addItemAfter()">
+              ＋ Add item
+            </AppButton>
+          </div>
+        </div>
       </section>
 
       <!-- AI panel -->
@@ -190,25 +370,12 @@ function applyOutput() {
         </template>
 
         <template v-else>
-          <div class="mt-4 space-y-4">
-            <!-- Action -->
-            <div>
-              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Action
-              </label>
-              <select
-                v-model="actionId"
-                class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-50 dark:focus:ring-indigo-900"
-              >
-                <option v-for="a in AI_ACTIONS" :key="a.id" :value="a.id">
-                  {{ a.label }}
-                </option>
-              </select>
-              <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                {{ selectedAction?.description }}
-              </p>
-            </div>
+          <p class="mt-3 text-sm text-slate-500 dark:text-slate-400">
+            Pick a provider and model, then use the action buttons on each item.
+            The action is applied immediately and can be undone once.
+          </p>
 
+          <div class="mt-4 space-y-4">
             <!-- Provider -->
             <div>
               <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
@@ -216,7 +383,7 @@ function applyOutput() {
               </label>
               <select
                 v-model="providerId"
-                class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-50 dark:focus:ring-indigo-900"
+                class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-50 dark:focus:ring-indigo-900"
               >
                 <option v-for="p in providers" :key="p.id" :value="p.id">
                   {{ p.name }}
@@ -250,37 +417,16 @@ function applyOutput() {
               This provider has no API key. Set it in Settings.
             </p>
 
-            <AppButton block :disabled="!canRun" @click="runAi">
-              {{ running ? 'Running…' : 'Run ' + (selectedAction?.label ?? '') }}
-            </AppButton>
+            <p
+              v-if="runningItemId"
+              class="text-sm font-medium text-indigo-600 dark:text-indigo-400"
+            >
+              Running AI action…
+            </p>
 
             <p v-if="aiError" class="text-sm font-medium text-red-600 dark:text-red-400">
               {{ aiError }}
             </p>
-
-            <!-- Output -->
-            <div>
-              <div class="flex items-center justify-between">
-                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                  Result
-                </label>
-                <AppButton
-                  v-if="output"
-                  variant="bordered"
-                  size="sm"
-                  :disabled="running"
-                  @click="applyOutput"
-                >
-                  Apply to draft
-                </AppButton>
-              </div>
-              <textarea
-                :value="output"
-                readonly
-                placeholder="AI output will appear here."
-                class="mt-1 h-64 w-full resize-none rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none dark:border-slate-600 dark:bg-slate-900 dark:text-slate-50 dark:placeholder:text-slate-500"
-              ></textarea>
-            </div>
           </div>
         </template>
       </aside>

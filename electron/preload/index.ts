@@ -28,6 +28,8 @@ contextBridge.exposeInMainWorld('aiApi', {
 contextBridge.exposeInMainWorld('quickWriteApi', {
   save: (content: string): Promise<{ path: string } | null> =>
     ipcRenderer.invoke('quickwrite:save', content),
+  saveTxt: (content: string): Promise<{ path: string } | null> =>
+    ipcRenderer.invoke('quickwrite:saveTxt', content),
   load: (): Promise<{ path: string; content: string } | null> =>
     ipcRenderer.invoke('quickwrite:load'),
 })

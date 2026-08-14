@@ -44,7 +44,18 @@ interface Window {
     }): Promise<string>
   }
   quickWriteApi: {
+    /**
+     * Persists a serialized Quick Write document (DraftDocument JSON string).
+     */
     save(content: string): Promise<{ path: string } | null>
+    /**
+     * Saves the combined item texts to a plain-text (.txt) file.
+     */
+    saveTxt(content: string): Promise<{ path: string } | null>
+    /**
+     * Loads a Quick Write file; `content` is the raw file text (structured JSON
+     * for files created by this app, or plain text from older files).
+     */
     load(): Promise<{ path: string; content: string } | null>
   }
 }
