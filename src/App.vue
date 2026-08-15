@@ -2,6 +2,7 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import AboutDialog from './components/AboutDialog.vue'
+import StatusBar from './components/StatusBar.vue'
 
 const router = useRouter()
 const aboutOpen = ref(false)
@@ -31,4 +32,6 @@ onBeforeUnmount(() => window.ipcRenderer?.off('menu-action', onMenuAction))
   <router-view @navigate="navigate" @back="goHome" />
 
   <AboutDialog v-if="aboutOpen" @close="aboutOpen = false" />
+
+  <StatusBar />
 </template>
