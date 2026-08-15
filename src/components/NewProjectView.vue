@@ -1,24 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import AppButton from './ui/AppButton.vue'
-import AppTextField from './ui/AppTextField.vue'
+import ProjectForm from './ProjectForm.vue'
+import type { ProjectFormPayload } from './ProjectForm.vue'
 import { useProjectStore } from '../store/projects'
 
 const emit = defineEmits<{ back: [] }>()
 
 const projectStore = useProjectStore()
 
-const name = ref('')
-const description = ref('')
-const author = ref('')
-
-function create() {
-  if (!name.value.trim()) return
-  projectStore.createProject(
-    name.value.trim(),
-    description.value.trim(),
-    author.value.trim(),
-  )
+function create(payload: ProjectFormPayload) {
+  projectStore.createProject(payload.name, payload.description, payload.author)
   // Project is now active; the home view switches to the project menus.
   emit('back')
 }
@@ -40,53 +30,11 @@ function create() {
         Start a new novel. Only the name is required.
       </p>
 
-      <form class="mt-6 space-y-4" @submit.prevent="create">
-        <label
-          class="block text-sm font-medium text-slate-700 dark:text-slate-300"
-        >
-          Name
-          <AppTextField v-model="name" class="mt-1" placeholder="My Novel" />
-        </label>
-
-        <label
-          class="block text-sm font-medium text-slate-700 dark:text-slate-300"
-        >
-          Description
-          <span class="font-normal text-slate-400 dark:text-slate-500">
-            (optional)
-          </span>
-          <AppTextField
-            v-model="description"
-            multiline
-            :rows="3"
-            class="mt-1"
-            placeholder="A brief summary of your story…"
-          />
-        </label>
-
-        <label
-          class="block text-sm font-medium text-slate-700 dark:text-slate-300"
-        >
-          Author
-          <span class="font-normal text-slate-400 dark:text-slate-500">
-            (optional)
-          </span>
-          <AppTextField
-            v-model="author"
-            class="mt-1"
-            placeholder="Your name"
-          />
-        </label>
-
-        <div class="flex justify-end gap-3 pt-2">
-          <AppButton variant="bordered" @click="$emit('back')">
-            Cancel
-          </AppButton>
-          <AppButton type="submit" :disabled="!name.trim()">
-            Create Project
-          </AppButton>
-        </div>
-      </form>
+      <ProjectForm
+        submit-label="Create Project"
+        @save="create"
+        @cancel="$emit('back')"
+      />
     </div>
   </main>
 </template>

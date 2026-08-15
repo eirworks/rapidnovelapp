@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import AppButton from './ui/AppButton.vue'
+import AppModal from './ui/AppModal.vue'
+import ProjectForm from './ProjectForm.vue'
+import type { ProjectFormPayload } from './ProjectForm.vue'
 import { useProjectStore } from '../store/projects'
 import { menus } from '../libs/features'
 import VueIcon from '@kalimahapps/vue-icons/VueIcon';
@@ -7,6 +11,13 @@ import VueIcon from '@kalimahapps/vue-icons/VueIcon';
 const emit = defineEmits<{ navigate: [view: string] }>()
 
 const projectStore = useProjectStore()
+
+const editOpen = ref(false)
+
+function saveEdit(payload: ProjectFormPayload) {
+  projectStore.editProject(payload.name, payload.description, payload.author)
+  editOpen.value = false
+}
 </script>
 
 <template>
@@ -62,15 +73,42 @@ const projectStore = useProjectStore()
       </div>
     </template>
 
-    <!-- Project open: show the project name and its grouped menu grid -->
+    <!-- Project open: show the project header and its grouped menu grid -->
     <template v-else>
-      <h1 class="text-4xl font-bold tracking-tight">
-        <span
-          class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent drop-shadow-sm"
+      <div
+        class="flex w-full max-w-2xl items-start justify-between gap-4 text-left"
+      >
+        <div class="min-w-0">
+          <h1 class="text-4xl font-bold tracking-tight">
+            <span
+              class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent drop-shadow-sm"
+            >
+              {{ projectStore.project.name }}
+            </span>
+          </h1>
+          <p
+            v-if="projectStore.project.description"
+            class="mt-2 truncate text-sm text-slate-500 dark:text-slate-400"
+          >
+            {{ projectStore.project.description }}
+          </p>
+          <p
+            v-if="projectStore.project.author"
+            class="text-xs text-slate-400 dark:text-slate-500"
+          >
+            {{ projectStore.project.author }}
+          </p>
+        </div>
+
+        <AppButton
+          variant="bordered"
+          size="sm"
+          class="shrink-0"
+          @click="editOpen = true"
         >
-          {{ projectStore.project.name }}
-        </span>
-      </h1>
+          Edit Project
+        </AppButton>
+      </div>
 
       <div
         class="mt-10 flex w-full max-w-2xl flex-col gap-10 text-left"
@@ -102,6 +140,17 @@ const projectStore = useProjectStore()
       </div>
     </template>
   </main>
+
+  <AppModal v-if="editOpen" title="Edit Project" @close="editOpen = false">
+    <ProjectForm
+      :initial-name="projectStore.project?.name ?? ''"
+      :initial-description="projectStore.project?.description ?? ''"
+      :initial-author="projectStore.project?.author ?? ''"
+      submit-label="Save Changes"
+      @save="saveEdit"
+      @cancel="editOpen = false"
+    />
+  </AppModal>
 </template>
 
 <style scoped>

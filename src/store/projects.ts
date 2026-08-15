@@ -16,6 +16,15 @@ export const useProjectStore = defineStore('projects',() => {
         )
     }
 
+    /** Updates the active project's metadata (name, description, author). */
+    function editProject(name: string, description: string, author: string) {
+        if (!project.value) return
+
+        project.value.name = name
+        project.value.description = description
+        project.value.author = author
+    }
+
     // aliases for service methods
     function addCharacter(firstName: string, lastName: string, isFemale: boolean) {
         if (!project.value) return
@@ -42,6 +51,7 @@ export const useProjectStore = defineStore('projects',() => {
     return {
         project,
         createProject,
+        editProject,
         addCharacter,
         editCharacter,
         deleteCharacter
