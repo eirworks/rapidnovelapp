@@ -30,3 +30,5 @@ pnpm-lock.yaml
 pnpm-workspace.yaml
 yarn.lock
 bun.lock
+
+*.tsbuildinfo

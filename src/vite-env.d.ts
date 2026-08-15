@@ -58,4 +58,16 @@ interface Window {
      */
     load(): Promise<{ path: string; content: string } | null>
   }
+  projectApi: {
+    /**
+     * Persists a project snapshot to
+     * `~/.rapidnovel/project/<project-id>/project.json`.
+     * `project` is the pre-serialized JSON string.
+     */
+    save(project: string): Promise<{ path: string }>
+    /** Lists all saved projects, read from `~/.rapidnovel/project/<id>/project.json`. */
+    list(): Promise<import('./libs/models/ProjectData').ProjectSummary[]>
+    /** Loads the full saved data of a project by id. */
+    load(id: string): Promise<import('./libs/models/ProjectData').ProjectData>
+  }
 }

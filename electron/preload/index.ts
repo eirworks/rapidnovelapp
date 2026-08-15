@@ -1,6 +1,15 @@
 import { ipcRenderer, contextBridge } from 'electron'
 import type { AppConfig, AiProvider, Theme } from '../config'
 
+/** Lightweight project entry returned by the Load Project list. */
+interface ProjectSummary {
+  id: string
+  name: string
+  description: string | null
+  author: string | null
+  path: string
+}
+
 // --------- Expose config API to the Renderer process ---------
 contextBridge.exposeInMainWorld('configApi', {
   get: (): Promise<AppConfig> => ipcRenderer.invoke('config:get'),
@@ -32,6 +41,15 @@ contextBridge.exposeInMainWorld('quickWriteApi', {
     ipcRenderer.invoke('quickwrite:saveTxt', content),
   load: (): Promise<{ path: string; content: string } | null> =>
     ipcRenderer.invoke('quickwrite:load'),
+})
+
+// --------- Expose Project file API to the Renderer process ---------
+contextBridge.exposeInMainWorld('projectApi', {
+  save: (project: string): Promise<{ path: string }> =>
+    ipcRenderer.invoke('project:save', project),
+  list: (): Promise<ProjectSummary[]> => ipcRenderer.invoke('project:list'),
+  load: (id: string): Promise<Record<string, unknown>> =>
+    ipcRenderer.invoke('project:load', id),
 })
 
 // --------- Expose some API to the Renderer process ---------
