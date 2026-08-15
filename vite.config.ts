@@ -5,6 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 import { electronSimple } from 'vite-plugin-electron/multi-env'
 import { notBundle } from 'vite-plugin-electron/plugin'
 import VueDevTools from 'vite-plugin-vue-devtools'
+import VueIconsPlugin from '@kalimahapps/vue-icons/vite';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
@@ -19,6 +20,7 @@ export default defineConfig(({ command }) => {
       vue(),
       tailwindcss(),
       VueDevTools(),
+      VueIconsPlugin(),
       electronSimple({
         main: {
           input: 'electron/main/index.ts',

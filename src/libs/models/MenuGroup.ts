@@ -1,6 +1,7 @@
 export interface MenuItem {
     label: string
     view: string
+    icon?: string
 }
 
 export interface MenuGroup {
