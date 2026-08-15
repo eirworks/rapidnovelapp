@@ -29,8 +29,8 @@ export interface CharacterData {
   lastName: string
   isFemale: boolean
   birthdate?: string | null
-  age?: number
   aliases?: string[]
+  description?: string
   /** Saved as a plain object because `Map`s are flattened during serialization. */
   data?: Record<string, string>
 }

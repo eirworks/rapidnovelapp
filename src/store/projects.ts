@@ -44,8 +44,8 @@ export const useProjectStore = defineStore('projects',() => {
         const character = new Character(data.firstName, data.lastName, data.isFemale)
         character.id = data.id
         character.birthdate = data.birthdate ?? null
-        character.age = data.age ?? 0
         character.aliases = data.aliases ?? []
+        character.description = data.description ?? ''
         // `data` was flattened to a plain object during save; restore the Map.
         character.data = new Map(Object.entries(data.data ?? {}))
         return character
@@ -70,14 +70,10 @@ export const useProjectStore = defineStore('projects',() => {
     }
 
     // aliases for service methods
-    function addCharacter(firstName: string, lastName: string, isFemale: boolean) {
+    function addCharacter(character: Character) {
         if (!project.value) return
 
-        project.value.characters.add(new Character(
-            firstName,
-            lastName,
-            isFemale
-        ))
+        project.value.characters.add(character)
     }
 
     function editCharacter(character: Character) {

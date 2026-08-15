@@ -12,8 +12,8 @@ const projectStore = useProjectStore()
 const statusBar = useStatusBarStore()
 
 /** Navigate to a route by name. Names match the Electron menu-action ids. */
-function navigate(view: string) {
-  router.push({ name: view })
+function navigate(view: string, params?: Record<string, string>) {
+  router.push({ name: view, params })
 }
 
 function goHome() {

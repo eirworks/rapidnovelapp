@@ -4,8 +4,8 @@ export class Character {
     lastName: string
     isFemale: boolean
     birthdate: string | null | undefined = null
-    age: number = 0
     aliases: string[] = []
+    description: string = ''
 
     // Other data
     data: Map<string, string> = new Map()

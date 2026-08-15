@@ -2,6 +2,8 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 
 import HomeView from '../components/HomeView.vue'
+import CharactersView from '../components/CharactersView.vue'
+import CharacterFormView from '../components/CharacterFormView.vue'
 import LoadProjectView from '../components/LoadProjectView.vue'
 import NewProjectView from '../components/NewProjectView.vue'
 import PlaceholderView from '../components/PlaceholderView.vue'
@@ -15,7 +17,6 @@ import SettingsView from '../components/SettingsView.vue'
  */
 const placeholderTitles: Record<string, string> = {
   'save-project': 'Save Project',
-  characters: 'Characters',
   places: 'Places',
   items: 'Items',
   timeline: 'Timeline',
@@ -32,6 +33,19 @@ const routes: RouteRecordRaw[] = [
   { path: '/quick-write', name: 'quick-write', component: QuickWriteView },
   { path: '/new-project', name: 'new-project', component: NewProjectView },
   { path: '/open-project', name: 'open-project', component: LoadProjectView },
+  { path: '/characters', name: 'characters', component: CharactersView },
+  {
+    path: '/characters/new',
+    name: 'character-new',
+    component: CharacterFormView,
+    props: { id: 'new' },
+  },
+  {
+    path: '/characters/:id',
+    name: 'character-edit',
+    component: CharacterFormView,
+    props: true,
+  },
   ...Object.entries(placeholderTitles).map(
     ([name, title]): RouteRecordRaw => ({
       path: `/${name}`,
