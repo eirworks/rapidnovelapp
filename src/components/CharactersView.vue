@@ -147,7 +147,7 @@ watch(allCharacters, (characters) => {
     <!-- Main content: wiki-style character article -->
     <section class="min-w-0 flex-1 overflow-y-auto">
       <template v-if="selectedCharacter">
-        <div class="mx-auto max-w-3xl px-6 py-8">
+        <div class="mx-auto w-full max-w-4xl px-8 py-8">
           <!-- Article header + edit/delete actions -->
           <div class="flex items-start justify-between gap-4">
             <h1
@@ -204,27 +204,54 @@ watch(allCharacters, (characters) => {
             </div>
           </div>
 
-          <!-- Quick facts -->
-          <dl class="mt-6 grid grid-cols-1 gap-x-8 gap-y-2 text-sm sm:grid-cols-2">
-            <div class="flex justify-between gap-4 border-b border-slate-200 py-1.5 dark:border-slate-700">
-              <dt class="text-slate-500 dark:text-slate-400">Gender</dt>
-              <dd class="text-slate-900 dark:text-slate-50">
-                {{ selectedCharacter.isFemale ? 'Female' : 'Male' }}
-              </dd>
-            </div>
-            <div class="flex justify-between gap-4 border-b border-slate-200 py-1.5 dark:border-slate-700">
-              <dt class="text-slate-500 dark:text-slate-400">Birthdate</dt>
-              <dd class="text-slate-900 dark:text-slate-50">
-                {{ selectedCharacter.birthdate || '—' }}
-              </dd>
-            </div>
-            <div class="flex justify-between gap-4 border-b border-slate-200 py-1.5 dark:border-slate-700">
-              <dt class="text-slate-500 dark:text-slate-400">Aliases</dt>
-              <dd class="text-slate-900 dark:text-slate-50">
-                {{ selectedCharacter.aliases.length > 0 ? selectedCharacter.aliases.join(', ') : '—' }}
-              </dd>
-            </div>
-          </dl>
+          <!-- Infobox floats to the right; description wraps around it -->
+          <aside
+            class="float-right ml-6 mb-4 w-72 rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm dark:border-slate-700 dark:bg-slate-800"
+          >
+            <table class="w-full border-collapse text-sm">
+              <tbody>
+                <tr
+                  v-if="selectedCharacter.isFemale === true || selectedCharacter.isFemale === false"
+                  class="border-b border-slate-200 last:border-b-0 dark:border-slate-700"
+                >
+                  <th
+                    class="w-28 py-1.5 pr-2 text-left align-top font-medium text-slate-500 dark:text-slate-400"
+                  >
+                    Gender
+                  </th>
+                  <td class="py-1.5 text-slate-900 dark:text-slate-50">
+                    {{ selectedCharacter.isFemale ? 'Female' : 'Male' }}
+                  </td>
+                </tr>
+                <tr
+                  v-if="selectedCharacter.birthdate"
+                  class="border-b border-slate-200 last:border-b-0 dark:border-slate-700"
+                >
+                  <th
+                    class="w-28 py-1.5 pr-2 text-left align-top font-medium text-slate-500 dark:text-slate-400"
+                  >
+                    Birthdate
+                  </th>
+                  <td class="py-1.5 text-slate-900 dark:text-slate-50">
+                    {{ selectedCharacter.birthdate }}
+                  </td>
+                </tr>
+                <tr
+                  v-if="selectedCharacter.aliases.length > 0"
+                  class="border-b border-slate-200 last:border-b-0 dark:border-slate-700"
+                >
+                  <th
+                    class="w-28 py-1.5 pr-2 text-left align-top font-medium text-slate-500 dark:text-slate-400"
+                  >
+                    Aliases
+                  </th>
+                  <td class="py-1.5 text-slate-900 dark:text-slate-50">
+                    {{ selectedCharacter.aliases.join(', ') }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </aside>
 
           <!-- Main article content: description -->
           <article class="mt-8">
