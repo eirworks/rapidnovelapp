@@ -71,9 +71,9 @@ function save() {
   character.description = description.value
 
   if (isEdit.value) {
-    projectStore.editCharacter(character)
+    project.value?.characterService.edit(character.id, character)
   } else {
-    projectStore.addCharacter(character)
+    project.value?.characterService.add(character)
   }
 
   goBack()

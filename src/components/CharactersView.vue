@@ -58,7 +58,7 @@ function fullName(character: Character): string {
 /** Deletes the currently selected character and closes the confirmation. */
 function confirmDeleteCharacter() {
   if (!selectedId.value) return
-  projectStore.deleteCharacter(selectedId.value)
+  project.value?.characterService.delete(selectedId.value)
   confirmDelete.value = false
 }
 

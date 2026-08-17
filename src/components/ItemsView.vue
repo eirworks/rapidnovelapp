@@ -63,7 +63,7 @@ function fullName(character: Character): string {
 /** Deletes the currently selected item and closes the confirmation. */
 function confirmDeleteItem() {
   if (!selectedId.value) return
-  projectStore.deleteItem(selectedId.value)
+  project.value?.itemService.delete(selectedId.value)
   confirmDelete.value = false
 }
 

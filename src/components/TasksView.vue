@@ -65,9 +65,9 @@ function onTaskSave(payload: TaskFormPayload) {
   task.groupId = payload.groupId || null
 
   if (payload.id) {
-    projectStore.editTask(task)
+    project.value?.taskService.edit(task.id, task)
   } else {
-    projectStore.addTask(task)
+    project.value?.taskService.add(task)
   }
   taskModal.value = false
 }
@@ -75,9 +75,9 @@ function onTaskSave(payload: TaskFormPayload) {
 /** Toggles a task between `pending` and `finished` (no-op for other statuses). */
 function toggleFinished(task: TaskModel) {
   if (task.status === 'finished') {
-    projectStore.editTask({ ...task, status: 'pending' })
+    project.value?.taskService.edit(task.id, { ...task, status: 'pending' })
   } else if (task.status === 'pending') {
-    projectStore.editTask({ ...task, status: 'finished' })
+    project.value?.taskService.edit(task.id, { ...task, status: 'finished' })
   }
 }
 
@@ -87,7 +87,7 @@ function confirmDeleteTask(task: TaskModel) {
 
 function doDeleteTask() {
   if (!confirmDeleteId.value) return
-  projectStore.deleteTask(confirmDeleteId.value)
+  project.value?.taskService.delete(confirmDeleteId.value)
   confirmDeleteId.value = null
 }
 
@@ -95,7 +95,7 @@ function onGroupSave(payload: TaskGroupFormPayload) {
   if (payload.id) {
     const existing = groups.value.find((g) => g.id === payload.id)
     if (existing) {
-      projectStore.editTaskGroup({
+      project.value?.taskGroupService.edit(existing.id, {
         ...existing,
         name: payload.name,
         description: payload.description.trim() || null,
@@ -103,7 +103,7 @@ function onGroupSave(payload: TaskGroupFormPayload) {
       })
     }
   } else {
-    projectStore.addTaskGroup({
+    project.value?.taskGroupService.add({
       id: crypto.randomUUID(),
       name: payload.name,
       description: payload.description.trim() || null,
@@ -113,11 +113,11 @@ function onGroupSave(payload: TaskGroupFormPayload) {
 }
 
 function onGroupDelete(id: string) {
-  projectStore.deleteTaskGroup(id)
+  project.value?.taskGroupService.delete(id)
   // Release any task that referenced the deleted group.
   tasks.value.forEach((task) => {
     if (task.groupId === id) {
-      projectStore.editTask({ ...task, groupId: null })
+      project.value?.taskService.edit(task.id, { ...task, groupId: null })
     }
   })
 }

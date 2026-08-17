@@ -61,9 +61,9 @@ function save() {
   item.ownerId = ownerId.value.trim() || null
 
   if (isEdit.value) {
-    projectStore.editItem(item)
+    project.value?.itemService.edit(item.id, item)
   } else {
-    projectStore.addItem(item)
+    project.value?.itemService.add(item)
   }
 
   goBack()

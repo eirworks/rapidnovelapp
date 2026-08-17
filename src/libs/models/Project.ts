@@ -13,11 +13,13 @@ export class Project {
 
     // Database, Content, and Management
     database: Database = new Database()
-    characters: CharacterService = new CharacterService(this.database)
-    places: PlaceService = new PlaceService(this.database)
-    items: ItemService = new ItemService(this.database)
-    tasks: TaskService = new TaskService(this.database)
-    taskGroups: TaskGroupService = new TaskGroupService(this.database)
+
+    // Services
+    characterService: CharacterService = new CharacterService(this.database)
+    placeService: PlaceService = new PlaceService(this.database)
+    itemService: ItemService = new ItemService(this.database)
+    taskService: TaskService = new TaskService(this.database)
+    taskGroupService: TaskGroupService = new TaskGroupService(this.database)
 
     // TODO update these types
     contents: string[] = []

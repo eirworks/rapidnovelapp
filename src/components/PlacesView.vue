@@ -43,7 +43,7 @@ const description = computed(() => selectedPlace.value?.description ?? '')
 /** Deletes the currently selected place and closes the confirmation. */
 function confirmDeletePlace() {
   if (!selectedId.value) return
-  projectStore.deletePlace(selectedId.value)
+  project.value?.placeService.delete(selectedId.value)
   confirmDelete.value = false
 }
 

@@ -58,9 +58,9 @@ function save() {
   place.description = description.value
 
   if (isEdit.value) {
-    projectStore.editPlace(place)
+    project.value?.placeService.edit(place.id, place)
   } else {
-    projectStore.addPlace(place)
+    project.value?.placeService.add(place)
   }
 
   goBack()
