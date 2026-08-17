@@ -88,6 +88,24 @@ export const useProjectStore = defineStore('projects',() => {
         project.value.characters.delete(id)
     }
 
+    function addPlace(place: Place) {
+        if (!project.value) return
+
+        project.value.places.add(place)
+    }
+
+    function editPlace(place: Place) {
+        if (!project.value) return
+
+        project.value.places.edit(place.id, place)
+    }
+
+    function deletePlace(id: string) {
+        if (!project.value) return
+
+        project.value.places.delete(id)
+    }
+
     return {
         project,
         createProject,
@@ -95,6 +113,9 @@ export const useProjectStore = defineStore('projects',() => {
         editProject,
         addCharacter,
         editCharacter,
-        deleteCharacter
+        deleteCharacter,
+        addPlace,
+        editPlace,
+        deletePlace
     }
 })
