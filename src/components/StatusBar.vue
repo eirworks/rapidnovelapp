@@ -33,6 +33,23 @@ onBeforeUnmount(() => statusBar.stop())
       <span class="text-sm text-slate-700 dark:text-slate-200">
         {{ statusBar.current?.message }}
       </span>
+      <button
+        type="button"
+        aria-label="Dismiss"
+        class="pointer-events-auto -mr-1 -ml-1 flex size-5 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+        @click="statusBar.dismiss()"
+      >
+        <svg
+          class="size-3"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+        >
+          <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
     </div>
   </div>
 </template>

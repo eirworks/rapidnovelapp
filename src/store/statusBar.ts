@@ -7,7 +7,7 @@ const TICK_MS = 3000
 
 /**
  * Holds a queue of status messages. Every tick the next message in the queue
- * becomes the one shown; if the queue is empty the current message is kept.
+ * becomes the one shown; if the queue is empty the bar is hidden.
  */
 export const useStatusBarStore = defineStore('statusBar', () => {
   const queue = ref<StatusMessage[]>([])
@@ -41,13 +41,19 @@ export const useStatusBarStore = defineStore('statusBar', () => {
     enqueue({ severity: 'info', message })
   }
 
-  /** Replaces the current message with the next queued one, if any. */
+  /**
+   * Replaces the current message with the next queued one, if any.
+   * When the queue is empty the bar is hidden.
+   */
   function next() {
     const item = queue.value.shift()
-    if (item) {
-      current.value = item
-    }
-    // When the queue is empty the current message is kept.
+    current.value = item ?? null
+  }
+
+  /** Hides the bar and clears any remaining queued messages. */
+  function dismiss() {
+    queue.value = []
+    current.value = null
   }
 
   function start() {
@@ -71,6 +77,7 @@ export const useStatusBarStore = defineStore('statusBar', () => {
     warning,
     info,
     next,
+    dismiss,
     start,
     stop,
   }
