@@ -9,6 +9,8 @@ import NewProjectView from '../components/NewProjectView.vue'
 import PlaceholderView from '../components/PlaceholderView.vue'
 import PlacesView from '../components/PlacesView.vue'
 import PlaceFormView from '../components/PlaceFormView.vue'
+import ItemsView from '../components/ItemsView.vue'
+import ItemFormView from '../components/ItemFormView.vue'
 import QuickWriteView from '../components/QuickWriteView.vue'
 import SettingsView from '../components/SettingsView.vue'
 
@@ -19,7 +21,6 @@ import SettingsView from '../components/SettingsView.vue'
  */
 const placeholderTitles: Record<string, string> = {
   'save-project': 'Save Project',
-  items: 'Items',
   timeline: 'Timeline',
   plots: 'Plots',
   draft: 'Draft',
@@ -58,6 +59,19 @@ const routes: RouteRecordRaw[] = [
     path: '/places/:id',
     name: 'place-edit',
     component: PlaceFormView,
+    props: true,
+  },
+  { path: '/items', name: 'items', component: ItemsView },
+  {
+    path: '/items/new',
+    name: 'item-new',
+    component: ItemFormView,
+    props: { id: 'new' },
+  },
+  {
+    path: '/items/:id',
+    name: 'item-edit',
+    component: ItemFormView,
     props: true,
   },
   ...Object.entries(placeholderTitles).map(

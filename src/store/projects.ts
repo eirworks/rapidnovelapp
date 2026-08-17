@@ -2,7 +2,8 @@ import { defineStore } from "pinia";
 import { Project } from "../libs/models/Project";
 import { Character } from "../libs/models/Character";
 import { Place } from "../libs/models/Place";
-import type { CharacterData, PlaceData, ProjectData } from "../libs/models/ProjectData";
+import { Item } from "../libs/models/Item";
+import type { CharacterData, ItemData, PlaceData, ProjectData } from "../libs/models/ProjectData";
 import { ref } from "vue";
 
 export const useProjectStore = defineStore('projects',() => {
@@ -30,7 +31,7 @@ export const useProjectStore = defineStore('projects',() => {
         loaded.author = data.author
         loaded.database.characters = (data.database?.characters ?? []).map(toCharacter)
         loaded.database.places = (data.database?.places ?? []).map(toPlace)
-        loaded.database.items = data.database?.items ?? []
+        loaded.database.items = (data.database?.items ?? []).map(toItem)
         loaded.database.plots = data.database?.plots ?? []
         loaded.database.universe = data.database?.universe ?? []
         loaded.database.timeline = data.database?.timeline ?? []
@@ -58,6 +59,15 @@ export const useProjectStore = defineStore('projects',() => {
         place.description = data.description ?? ""
         place.parentId = data.parentId ?? null
         return place
+    }
+
+    /** Rebuilds an Item instance from its saved plain-data shape. */
+    function toItem(data: ItemData): Item {
+        const item = new Item(data.name, data.type as Item["type"])
+        item.id = data.id
+        item.description = data.description ?? ""
+        item.ownerId = data.ownerId ?? null
+        return item
     }
 
     /** Updates the active project's metadata (name, description, author). */
@@ -106,6 +116,24 @@ export const useProjectStore = defineStore('projects',() => {
         project.value.places.delete(id)
     }
 
+    function addItem(item: Item) {
+        if (!project.value) return
+
+        project.value.items.add(item)
+    }
+
+    function editItem(item: Item) {
+        if (!project.value) return
+
+        project.value.items.edit(item.id, item)
+    }
+
+    function deleteItem(id: string) {
+        if (!project.value) return
+
+        project.value.items.delete(id)
+    }
+
     return {
         project,
         createProject,
@@ -116,6 +144,9 @@ export const useProjectStore = defineStore('projects',() => {
         deleteCharacter,
         addPlace,
         editPlace,
-        deletePlace
+        deletePlace,
+        addItem,
+        editItem,
+        deleteItem
     }
 })

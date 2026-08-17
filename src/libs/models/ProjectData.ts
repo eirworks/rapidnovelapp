@@ -17,7 +17,7 @@ export interface ProjectData {
 export interface ProjectDatabaseData {
   characters?: CharacterData[]
   places?: PlaceData[]
-  items?: string[]
+  items?: ItemData[]
   plots?: string[]
   universe?: string[]
   timeline?: string[]
@@ -40,6 +40,14 @@ export interface PlaceData {
   name: string
   description?: string
   parentId?: string | null
+}
+
+export interface ItemData {
+  id: string
+  name: string
+  type: string
+  description?: string
+  ownerId?: string | null
 }
 
 /** A lightweight project entry shown in the Load Project list. */

@@ -1,6 +1,7 @@
 import { Database } from "./Database"
 import { CharacterService } from "../services/CharacterService"
 import { PlaceService } from "../services/PlaceService"
+import { ItemService } from "../services/ItemService"
 
 export class Project {
     id: string // UUID formatted
@@ -12,6 +13,7 @@ export class Project {
     database: Database = new Database()
     characters: CharacterService = new CharacterService(this.database)
     places: PlaceService = new PlaceService(this.database)
+    items: ItemService = new ItemService(this.database)
 
     // TODO update these types
     contents: string[] = []
