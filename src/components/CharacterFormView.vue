@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import AppButton from './ui/AppButton.vue'
 import AppTextField from './ui/AppTextField.vue'
+import Breadcrumb from './ui/Breadcrumb.vue'
 import { useProjectStore } from '../store/projects'
 import { Character } from '../libs/models/Character'
 
@@ -49,6 +50,10 @@ const vAutoGrow = {
   updated: (el: HTMLElement) => growTextarea(el),
 }
 
+function goHome() {
+  emit('navigate', 'home')
+}
+
 function goBack() {
   emit('navigate', 'characters')
 }
@@ -88,11 +93,13 @@ function save() {
     <header
       class="flex shrink-0 items-center gap-2 border-b border-slate-200 bg-white px-4 py-2 dark:border-slate-700 dark:bg-slate-800"
     >
-      <AppButton variant="text" @click="goBack">← Characters</AppButton>
-
-      <h1 class="ml-1 text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-50">
-        {{ title }}
-      </h1>
+      <Breadcrumb
+        :crumbs="[
+          { label: 'Home', onClick: goHome },
+          { label: 'Characters', onClick: goBack },
+          { label: title },
+        ]"
+      />
 
       <span class="flex-1"></span>
 

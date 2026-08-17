@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import AppButton from './ui/AppButton.vue'
 import AppTextField from './ui/AppTextField.vue'
+import Breadcrumb from './ui/Breadcrumb.vue'
 import { useProjectStore } from '../store/projects'
 import type { Place } from '../libs/models/Place'
 import VueIcon from '@kalimahapps/vue-icons/VueIcon'
@@ -68,11 +69,13 @@ watch(allPlaces, (places) => {
     <aside
       class="flex w-72 shrink-0 flex-col border-r border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800"
     >
-      <header class="flex shrink-0 items-center justify-between px-4 py-3">
-        <AppButton variant="text" size="sm" @click="$emit('back')">← Home</AppButton>
-        <h2 class="text-sm font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">
-          Places
-        </h2>
+      <header class="flex shrink-0 items-center px-4 py-3">
+        <Breadcrumb
+          :crumbs="[
+            { label: 'Home', onClick: () => $emit('back') },
+            { label: 'Places' },
+          ]"
+        />
       </header>
 
       <!-- Search input at the top of the list -->

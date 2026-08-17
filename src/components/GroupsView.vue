@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import AppButton from './ui/AppButton.vue'
+import Breadcrumb from './ui/Breadcrumb.vue'
 import { useProjectStore } from '../store/projects'
 import type { Group, GroupType } from '../libs/models/Group'
 import VueIcon from '@kalimahapps/vue-icons/VueIcon'
@@ -55,10 +56,12 @@ function viewGroup(group: Group) {
     <header
       class="flex shrink-0 items-center gap-2 border-b border-slate-200 bg-white px-4 py-2 dark:border-slate-700 dark:bg-slate-800"
     >
-      <AppButton variant="text" @click="$emit('back')">← Home</AppButton>
-      <h1 class="ml-1 text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-50">
-        Groups
-      </h1>
+      <Breadcrumb
+        :crumbs="[
+          { label: 'Home', onClick: () => $emit('back') },
+          { label: 'Groups' },
+        ]"
+      />
       <span class="flex-1"></span>
       <AppButton @click="$emit('navigate', 'group-new')">
         <VueIcon name="bs:plus-lg" />

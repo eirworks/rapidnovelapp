@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import AppButton from './ui/AppButton.vue'
+import Breadcrumb from './ui/Breadcrumb.vue'
 import { useProjectStore } from '../store/projects'
 import type { Group, GroupType } from '../libs/models/Group'
 import type { Character } from '../libs/models/Character'
@@ -59,6 +60,10 @@ const members = computed<{ id: string; label: string; view: string }[]>(() => {
   }
 })
 
+function goHome() {
+  emit('navigate', 'home')
+}
+
 function goBack() {
   emit('navigate', 'groups')
 }
@@ -79,10 +84,13 @@ function openMember(view: string, id: string) {
     <header
       class="flex shrink-0 items-center gap-2 border-b border-slate-200 bg-white px-4 py-2 dark:border-slate-700 dark:bg-slate-800"
     >
-      <AppButton variant="text" @click="goBack">← Groups</AppButton>
-      <h1 class="ml-1 text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-50">
-        Group
-      </h1>
+      <Breadcrumb
+        :crumbs="[
+          { label: 'Home', onClick: goHome },
+          { label: 'Groups', onClick: goBack },
+          { label: group?.name || 'Group' },
+        ]"
+      />
       <span class="flex-1"></span>
       <AppButton @click="editGroup" :disabled="!group">
         <VueIcon name="bs:pencil-square" />

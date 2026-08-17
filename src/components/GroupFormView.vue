@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import AppButton from './ui/AppButton.vue'
 import AppTextField from './ui/AppTextField.vue'
+import Breadcrumb from './ui/Breadcrumb.vue'
 import { useProjectStore } from '../store/projects'
 import { Group, GROUP_TYPES, type GroupType } from '../libs/models/Group'
 import type { Character } from '../libs/models/Character'
@@ -77,6 +78,10 @@ function toggleMember(memberId: string) {
   }
 }
 
+function goHome() {
+  emit('navigate', 'home')
+}
+
 function goBack() {
   emit('navigate', 'groups')
 }
@@ -108,10 +113,13 @@ function save() {
     <header
       class="flex shrink-0 items-center gap-2 border-b border-slate-200 bg-white px-4 py-2 dark:border-slate-700 dark:bg-slate-800"
     >
-      <AppButton variant="text" @click="goBack">← Groups</AppButton>
-      <h1 class="ml-1 text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-50">
-        {{ title }}
-      </h1>
+      <Breadcrumb
+        :crumbs="[
+          { label: 'Home', onClick: goHome },
+          { label: 'Groups', onClick: goBack },
+          { label: title },
+        ]"
+      />
       <span class="flex-1"></span>
       <AppButton variant="bordered" @click="goBack">Cancel</AppButton>
       <AppButton type="submit" :disabled="!name.trim()" @click="save">
