@@ -5,7 +5,8 @@ import { Place } from "../libs/models/Place";
 import { Item } from "../libs/models/Item";
 import { Task } from "../libs/models/Task";
 import { TaskGroup } from "../libs/models/TaskGroup";
-import type { CharacterData, ItemData, PlaceData, ProjectData, TaskData, TaskGroupData } from "../libs/models/ProjectData";
+import { Group } from "../libs/models/Group";
+import type { CharacterData, ItemData, PlaceData, ProjectData, TaskData, TaskGroupData, GroupData } from "../libs/models/ProjectData";
 import { ref } from "vue";
 
 export const useProjectStore = defineStore('projects',() => {
@@ -36,6 +37,7 @@ export const useProjectStore = defineStore('projects',() => {
         loaded.database.items = (data.database?.items ?? []).map(toItem)
         loaded.database.tasks = (data.database?.tasks ?? []).map(toTask)
         loaded.database.taskGroups = (data.database?.taskGroups ?? []).map(toTaskGroup)
+        loaded.database.groups = (data.database?.groups ?? []).map(toGroup)
         loaded.database.plots = data.database?.plots ?? []
         loaded.database.universe = data.database?.universe ?? []
         loaded.database.timeline = data.database?.timeline ?? []
@@ -90,6 +92,15 @@ export const useProjectStore = defineStore('projects',() => {
         group.id = data.id
         group.description = data.description ?? null
         group.dueDate = data.dueDate ?? null
+        return group
+    }
+
+    /** Rebuilds a Group instance from its saved plain-data shape. */
+    function toGroup(data: GroupData): Group {
+        const group = new Group(data.name, data.type as Group["type"])
+        group.id = data.id
+        group.description = data.description ?? ""
+        group.memberIds = data.memberIds ?? []
         return group
     }
 

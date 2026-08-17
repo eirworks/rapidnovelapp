@@ -11,6 +11,9 @@ import PlacesView from '../components/PlacesView.vue'
 import PlaceFormView from '../components/PlaceFormView.vue'
 import ItemsView from '../components/ItemsView.vue'
 import ItemFormView from '../components/ItemFormView.vue'
+import GroupsView from '../components/GroupsView.vue'
+import GroupFormView from '../components/GroupFormView.vue'
+import GroupDetailView from '../components/GroupDetailView.vue'
 import TasksView from '../components/TasksView.vue'
 import QuickWriteView from '../components/QuickWriteView.vue'
 import SettingsView from '../components/SettingsView.vue'
@@ -73,6 +76,25 @@ const routes: RouteRecordRaw[] = [
     path: '/items/:id',
     name: 'item-edit',
     component: ItemFormView,
+    props: true,
+  },
+  { path: '/groups', name: 'groups', component: GroupsView },
+  {
+    path: '/groups/new',
+    name: 'group-new',
+    component: GroupFormView,
+    props: { id: 'new' },
+  },
+  {
+    path: '/groups/:id',
+    name: 'group-detail',
+    component: GroupDetailView,
+    props: true,
+  },
+  {
+    path: '/groups/:id/edit',
+    name: 'group-edit',
+    component: GroupFormView,
     props: true,
   },
   { path: '/tasks', name: 'tasks', component: TasksView },

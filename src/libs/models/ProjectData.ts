@@ -18,6 +18,7 @@ export interface ProjectDatabaseData {
   characters?: CharacterData[]
   places?: PlaceData[]
   items?: ItemData[]
+  groups?: GroupData[]
   tasks?: TaskData[]
   taskGroups?: TaskGroupData[]
   plots?: string[]
@@ -50,6 +51,14 @@ export interface ItemData {
   type: string
   description?: string
   ownerId?: string | null
+}
+
+export interface GroupData {
+  id: string
+  name: string
+  type: string
+  description?: string
+  memberIds?: string[]
 }
 
 export interface TaskData {
