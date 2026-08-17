@@ -18,6 +18,8 @@ export interface ProjectDatabaseData {
   characters?: CharacterData[]
   places?: PlaceData[]
   items?: ItemData[]
+  tasks?: TaskData[]
+  taskGroups?: TaskGroupData[]
   plots?: string[]
   universe?: string[]
   timeline?: string[]
@@ -48,6 +50,22 @@ export interface ItemData {
   type: string
   description?: string
   ownerId?: string | null
+}
+
+export interface TaskData {
+  id: string
+  status: string
+  task: string
+  description?: string | null
+  dueDate?: string | null
+  groupId?: string | null
+}
+
+export interface TaskGroupData {
+  id: string
+  name: string
+  description?: string | null
+  dueDate?: string | null
 }
 
 /** A lightweight project entry shown in the Load Project list. */

@@ -11,6 +11,7 @@ import PlacesView from '../components/PlacesView.vue'
 import PlaceFormView from '../components/PlaceFormView.vue'
 import ItemsView from '../components/ItemsView.vue'
 import ItemFormView from '../components/ItemFormView.vue'
+import TasksView from '../components/TasksView.vue'
 import QuickWriteView from '../components/QuickWriteView.vue'
 import SettingsView from '../components/SettingsView.vue'
 
@@ -74,6 +75,7 @@ const routes: RouteRecordRaw[] = [
     component: ItemFormView,
     props: true,
   },
+  { path: '/tasks', name: 'tasks', component: TasksView },
   ...Object.entries(placeholderTitles).map(
     ([name, title]): RouteRecordRaw => ({
       path: `/${name}`,

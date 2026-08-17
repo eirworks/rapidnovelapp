@@ -3,7 +3,9 @@ import { Project } from "../libs/models/Project";
 import { Character } from "../libs/models/Character";
 import { Place } from "../libs/models/Place";
 import { Item } from "../libs/models/Item";
-import type { CharacterData, ItemData, PlaceData, ProjectData } from "../libs/models/ProjectData";
+import { Task } from "../libs/models/Task";
+import { TaskGroup } from "../libs/models/TaskGroup";
+import type { CharacterData, ItemData, PlaceData, ProjectData, TaskData, TaskGroupData } from "../libs/models/ProjectData";
 import { ref } from "vue";
 
 export const useProjectStore = defineStore('projects',() => {
@@ -32,6 +34,8 @@ export const useProjectStore = defineStore('projects',() => {
         loaded.database.characters = (data.database?.characters ?? []).map(toCharacter)
         loaded.database.places = (data.database?.places ?? []).map(toPlace)
         loaded.database.items = (data.database?.items ?? []).map(toItem)
+        loaded.database.tasks = (data.database?.tasks ?? []).map(toTask)
+        loaded.database.taskGroups = (data.database?.taskGroups ?? []).map(toTaskGroup)
         loaded.database.plots = data.database?.plots ?? []
         loaded.database.universe = data.database?.universe ?? []
         loaded.database.timeline = data.database?.timeline ?? []
@@ -68,6 +72,25 @@ export const useProjectStore = defineStore('projects',() => {
         item.description = data.description ?? ""
         item.ownerId = data.ownerId ?? null
         return item
+    }
+
+    /** Rebuilds a Task instance from its saved plain-data shape. */
+    function toTask(data: TaskData): Task {
+        const task = new Task(data.task, data.status as Task["status"])
+        task.id = data.id
+        task.description = data.description ?? null
+        task.dueDate = data.dueDate ?? null
+        task.groupId = data.groupId ?? null
+        return task
+    }
+
+    /** Rebuilds a TaskGroup instance from its saved plain-data shape. */
+    function toTaskGroup(data: TaskGroupData): TaskGroup {
+        const group = new TaskGroup(data.name)
+        group.id = data.id
+        group.description = data.description ?? null
+        group.dueDate = data.dueDate ?? null
+        return group
     }
 
     /** Updates the active project's metadata (name, description, author). */
@@ -134,6 +157,42 @@ export const useProjectStore = defineStore('projects',() => {
         project.value.items.delete(id)
     }
 
+    function addTask(task: Task) {
+        if (!project.value) return
+
+        project.value.tasks.add(task)
+    }
+
+    function editTask(task: Task) {
+        if (!project.value) return
+
+        project.value.tasks.edit(task.id, task)
+    }
+
+    function deleteTask(id: string) {
+        if (!project.value) return
+
+        project.value.tasks.delete(id)
+    }
+
+    function addTaskGroup(group: TaskGroup) {
+        if (!project.value) return
+
+        project.value.taskGroups.add(group)
+    }
+
+    function editTaskGroup(group: TaskGroup) {
+        if (!project.value) return
+
+        project.value.taskGroups.edit(group.id, group)
+    }
+
+    function deleteTaskGroup(id: string) {
+        if (!project.value) return
+
+        project.value.taskGroups.delete(id)
+    }
+
     return {
         project,
         createProject,
@@ -147,6 +206,12 @@ export const useProjectStore = defineStore('projects',() => {
         deletePlace,
         addItem,
         editItem,
-        deleteItem
+        deleteItem,
+        addTask,
+        editTask,
+        deleteTask,
+        addTaskGroup,
+        editTaskGroup,
+        deleteTaskGroup
     }
 })
