@@ -6,7 +6,8 @@ import { Item } from "../libs/models/Item";
 import { Task } from "../libs/models/Task";
 import { TaskGroup } from "../libs/models/TaskGroup";
 import { Group } from "../libs/models/Group";
-import type { CharacterData, ItemData, PlaceData, ProjectData, TaskData, TaskGroupData, GroupData } from "../libs/models/ProjectData";
+import { Timeline } from "../libs/models/Timeline";
+import type { CharacterData, ItemData, PlaceData, ProjectData, TaskData, TaskGroupData, GroupData, TimelineData } from "../libs/models/ProjectData";
 import { computed, ref } from "vue";
 
 export const useProjectStore = defineStore('projects',() => {
@@ -40,7 +41,7 @@ export const useProjectStore = defineStore('projects',() => {
         loaded.database.groups = (data.database?.groups ?? []).map(toGroup)
         loaded.database.plots = data.database?.plots ?? []
         loaded.database.universe = data.database?.universe ?? []
-        loaded.database.timeline = data.database?.timeline ?? []
+        loaded.database.timelines = (data.database?.timelines ?? []).map(toTimeline)
         loaded.contents = data.contents ?? []
         loaded.manager = data.manager ?? []
         project.value = loaded
@@ -104,6 +105,15 @@ export const useProjectStore = defineStore('projects',() => {
         return group
     }
 
+    /** Rebuilds a Timeline instance from its saved plain-data shape. */
+    function toTimeline(data: TimelineData): Timeline {
+        const timeline = new Timeline(data.name)
+        timeline.id = data.id
+        timeline.description = data.description ?? ""
+        timeline.universeId = data.universeId ?? ""
+        return timeline
+    }
+
     /**
      * Simple aggregate counts shown as stats on the home view.
      * `database` sums the Character/Item/Place/Group counts; `contents` is 0
@@ -137,7 +147,7 @@ export const useProjectStore = defineStore('projects',() => {
             taskGroups: db.taskGroups.length,
             plots: db.plots.length,
             universe: db.universe.length,
-            timeline: db.timeline.length,
+            timeline: db.timelines.length,
         }
     })
 

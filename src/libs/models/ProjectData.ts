@@ -23,7 +23,7 @@ export interface ProjectDatabaseData {
   taskGroups?: TaskGroupData[]
   plots?: string[]
   universe?: string[]
-  timeline?: string[]
+  timelines?: TimelineData[]
 }
 
 export interface CharacterData {
@@ -75,6 +75,14 @@ export interface TaskGroupData {
   name: string
   description?: string | null
   dueDate?: string | null
+}
+
+export interface TimelineData {
+  id: string
+  name: string
+  description?: string
+  /** Reserved for a future universe feature; unused for now. */
+  universeId?: string
 }
 
 /** A lightweight project entry shown in the Load Project list. */

@@ -4,6 +4,7 @@ import type { Item } from "./Item";
 import type { Task } from "./Task";
 import type { TaskGroup } from "./TaskGroup";
 import type { Group } from "./Group";
+import type { Timeline } from "./Timeline";
 
 export class Database {
     characters: Character[] = [];
@@ -12,9 +13,9 @@ export class Database {
     groups: Group[] = [];
     tasks: Task[] = [];
     taskGroups: TaskGroup[] = [];
+    timelines: Timeline[] = [];
 
     // TODO change type when the class is ready
     plots: string[] = [];
     universe: string[] = [];
-    timeline: string[] = [];
 }

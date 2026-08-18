@@ -5,6 +5,7 @@ import { ItemService } from "../services/ItemService"
 import { TaskService } from "../services/TaskService"
 import { TaskGroupService } from "../services/TaskGroupService"
 import { GroupService } from "../services/GroupService"
+import { TimelineService } from "../services/TimelineService"
 
 export class Project {
     id: string // UUID formatted
@@ -22,6 +23,7 @@ export class Project {
     taskService: TaskService = new TaskService(this.database)
     taskGroupService: TaskGroupService = new TaskGroupService(this.database)
     groupService: GroupService = new GroupService(this.database)
+    timelineService: TimelineService = new TimelineService(this.database)
 
     // TODO update these types
     contents: string[] = []
