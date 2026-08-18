@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import AppButton from './ui/AppButton.vue'
+import Breadcrumb from './ui/Breadcrumb.vue'
 import TaskModal, { type TaskFormPayload } from './TaskModal.vue'
 import TaskGroupsModal from './TaskGroupsModal.vue'
 import type { TaskGroupFormPayload } from './TaskGroupModal.vue'
@@ -129,10 +130,12 @@ function onGroupDelete(id: string) {
     <header
       class="flex shrink-0 items-center gap-2 border-b border-slate-200 bg-white px-4 py-2 dark:border-slate-700 dark:bg-slate-800"
     >
-      <AppButton variant="text" @click="$emit('back')">← Home</AppButton>
-      <h1 class="ml-1 text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-50">
-        Tasks
-      </h1>
+      <Breadcrumb
+        :crumbs="[
+          { label: 'Home', onClick: () => $emit('back') },
+          { label: 'Tasks' },
+        ]"
+      />
       <span class="flex-1"></span>
       <AppButton variant="bordered" @click="groupsModal = true">
         <VueIcon name="bs:tag" />
