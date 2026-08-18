@@ -9,7 +9,7 @@ import { useProjectStore } from '../store/projects'
 import { Timeline } from '../libs/models/Timeline'
 import VueIcon from '@kalimahapps/vue-icons/VueIcon'
 
-defineEmits<{ back: [] }>()
+defineEmits<{ back: []; navigate: [view: string, params?: Record<string, string>] }>()
 
 const projectStore = useProjectStore()
 const { project } = storeToRefs(projectStore)
@@ -84,7 +84,12 @@ function save() {
         <div
           v-for="timeline in timelines"
           :key="timeline.id"
-          class="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800"
+          class="flex cursor-pointer items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:border-indigo-300 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-indigo-600"
+          role="button"
+          tabindex="0"
+          @click="$emit('navigate', 'timeline-detail', { id: timeline.id })"
+          @keydown.enter="$emit('navigate', 'timeline-detail', { id: timeline.id })"
+          @keydown.space.prevent="$emit('navigate', 'timeline-detail', { id: timeline.id })"
         >
           <!-- Gradient box with the timeline initials -->
           <div
@@ -113,7 +118,7 @@ function save() {
             type="button"
             class="flex shrink-0 cursor-pointer items-center rounded-md p-1.5 text-slate-500 transition hover:bg-slate-100 hover:text-indigo-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-indigo-300"
             title="Edit timeline"
-            @click="openEdit(timeline)"
+            @click.stop="openEdit(timeline)"
           >
             <VueIcon name="bs:pencil-square" />
           </button>

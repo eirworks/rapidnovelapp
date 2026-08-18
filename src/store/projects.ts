@@ -7,7 +7,8 @@ import { Task } from "../libs/models/Task";
 import { TaskGroup } from "../libs/models/TaskGroup";
 import { Group } from "../libs/models/Group";
 import { Timeline } from "../libs/models/Timeline";
-import type { CharacterData, ItemData, PlaceData, ProjectData, TaskData, TaskGroupData, GroupData, TimelineData } from "../libs/models/ProjectData";
+import { Event } from "../libs/models/Event";
+import type { CharacterData, ItemData, PlaceData, ProjectData, TaskData, TaskGroupData, GroupData, TimelineData, EventData } from "../libs/models/ProjectData";
 import { computed, ref } from "vue";
 
 export const useProjectStore = defineStore('projects',() => {
@@ -42,6 +43,7 @@ export const useProjectStore = defineStore('projects',() => {
         loaded.database.plots = data.database?.plots ?? []
         loaded.database.universe = data.database?.universe ?? []
         loaded.database.timelines = (data.database?.timelines ?? []).map(toTimeline)
+        loaded.database.events = (data.database?.events ?? []).map(toEvent)
         loaded.contents = data.contents ?? []
         loaded.manager = data.manager ?? []
         project.value = loaded
@@ -94,6 +96,15 @@ export const useProjectStore = defineStore('projects',() => {
         group.description = data.description ?? null
         group.dueDate = data.dueDate ?? null
         return group
+    }
+
+    /** Rebuilds an Event instance from its saved plain-data shape. */
+    function toEvent(data: EventData): Event {
+        const event = new Event(data.name, data.timelineId, data.date)
+        event.id = data.id
+        event.description = data.description ?? ''
+        event.actorIds = data.actorIds ?? []
+        return event
     }
 
     /** Rebuilds a Group instance from its saved plain-data shape. */

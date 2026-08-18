@@ -24,6 +24,7 @@ export interface ProjectDatabaseData {
   plots?: string[]
   universe?: string[]
   timelines?: TimelineData[]
+  events?: EventData[]
 }
 
 export interface CharacterData {
@@ -75,6 +76,15 @@ export interface TaskGroupData {
   name: string
   description?: string | null
   dueDate?: string | null
+}
+
+export interface EventData {
+  id: string
+  name: string
+  timelineId: string
+  description?: string
+  actorIds?: string[]
+  date: string
 }
 
 export interface TimelineData {

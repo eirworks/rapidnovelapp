@@ -16,6 +16,7 @@ import GroupFormView from '../components/GroupFormView.vue'
 import GroupDetailView from '../components/GroupDetailView.vue'
 import TasksView from '../components/TasksView.vue'
 import TimelinesView from '../components/TimelinesView.vue'
+import TimelineView from '../components/TimelineView.vue'
 import ReportsView from '../components/ReportsView.vue'
 import QuickWriteView from '../components/QuickWriteView.vue'
 import SettingsView from '../components/SettingsView.vue'
@@ -100,6 +101,12 @@ const routes: RouteRecordRaw[] = [
   },
   { path: '/tasks', name: 'tasks', component: TasksView },
   { path: '/timeline', name: 'timeline', component: TimelinesView },
+  {
+    path: '/timeline/:id',
+    name: 'timeline-detail',
+    component: TimelineView,
+    props: true,
+  },
   { path: '/reports', name: 'reports', component: ReportsView },
   ...Object.entries(placeholderTitles).map(
     ([name, title]): RouteRecordRaw => ({
