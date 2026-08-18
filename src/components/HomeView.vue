@@ -4,6 +4,7 @@ import AppButton from './ui/AppButton.vue'
 import AppModal from './ui/AppModal.vue'
 import ProjectForm from './ProjectForm.vue'
 import type { ProjectFormPayload } from './ProjectForm.vue'
+import ProjectStats from './ProjectStats.vue'
 import { useProjectStore } from '../store/projects'
 import { menus } from '../libs/features'
 import VueIcon from '@kalimahapps/vue-icons/VueIcon';
@@ -109,6 +110,8 @@ function saveEdit(payload: ProjectFormPayload) {
           Edit Project
         </AppButton>
       </div>
+
+      <ProjectStats class="mt-8" />
 
       <div
         class="mt-10 flex w-full max-w-2xl flex-col gap-10 text-left"

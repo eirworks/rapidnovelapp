@@ -7,7 +7,7 @@ import { Task } from "../libs/models/Task";
 import { TaskGroup } from "../libs/models/TaskGroup";
 import { Group } from "../libs/models/Group";
 import type { CharacterData, ItemData, PlaceData, ProjectData, TaskData, TaskGroupData, GroupData } from "../libs/models/ProjectData";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 export const useProjectStore = defineStore('projects',() => {
     const project = ref<Project | null>(null)
@@ -104,6 +104,24 @@ export const useProjectStore = defineStore('projects',() => {
         return group
     }
 
+    /**
+     * Simple aggregate counts shown as stats on the home view.
+     * `database` sums the Character/Item/Place/Group counts; `contents` is 0
+     * because the contents feature is not implemented yet.
+     */
+    const projectStats = computed(() => {
+        if (!project.value) return null
+        return {
+            database:
+                project.value.database.characters.length +
+                project.value.database.items.length +
+                project.value.database.places.length +
+                project.value.database.groups.length,
+            contents: project.value.contents.length,
+            tasks: project.value.database.tasks.length,
+        }
+    })
+
     /** Updates the active project's metadata (name, description, author). */
     function editProject(name: string, description: string, author: string) {
         if (!project.value) return
@@ -115,6 +133,7 @@ export const useProjectStore = defineStore('projects',() => {
 
     return {
         project,
+        projectStats,
         createProject,
         loadProject,
         editProject
