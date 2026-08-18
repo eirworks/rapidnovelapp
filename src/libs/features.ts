@@ -31,6 +31,7 @@ export const menus: MenuGroup[] = [
     label: "Management",
     items: [
         { label: 'Tasks', view: 'tasks', icon: 'bs:clipboard-check' },
+        { label: 'Reports', view: 'reports', icon: 'bs:bar-chart' },
     ]
   }
 ]

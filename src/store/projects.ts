@@ -122,6 +122,25 @@ export const useProjectStore = defineStore('projects',() => {
         }
     })
 
+    /**
+     * Per-collection counts of every database list, used by the Reports page.
+     */
+    const databaseStats = computed(() => {
+        if (!project.value) return null
+        const db = project.value.database
+        return {
+            characters: db.characters.length,
+            places: db.places.length,
+            items: db.items.length,
+            groups: db.groups.length,
+            tasks: db.tasks.length,
+            taskGroups: db.taskGroups.length,
+            plots: db.plots.length,
+            universe: db.universe.length,
+            timeline: db.timeline.length,
+        }
+    })
+
     /** Updates the active project's metadata (name, description, author). */
     function editProject(name: string, description: string, author: string) {
         if (!project.value) return
@@ -134,6 +153,7 @@ export const useProjectStore = defineStore('projects',() => {
     return {
         project,
         projectStats,
+        databaseStats,
         createProject,
         loadProject,
         editProject
