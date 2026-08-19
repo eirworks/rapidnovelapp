@@ -25,6 +25,8 @@ export const useProjectStore = defineStore('projects',() => {
             description,
             author
         )
+        // Every project starts with a single default universe.
+        project.value.universeService.add(new Universe("Main Universe"))
     }
 
     /** Loads a previously saved project into the active project in the store. */
