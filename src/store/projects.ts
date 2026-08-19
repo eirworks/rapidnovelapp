@@ -60,6 +60,7 @@ export const useProjectStore = defineStore('projects',() => {
         character.birthdate = data.birthdate ?? null
         character.aliases = data.aliases ?? []
         character.description = data.description ?? ''
+        character.universeId = data.universeId ?? ''
         // `data` was flattened to a plain object during save; restore the Map.
         character.data = new Map(Object.entries(data.data ?? {}))
         return character
@@ -71,6 +72,7 @@ export const useProjectStore = defineStore('projects',() => {
         place.id = data.id
         place.description = data.description ?? ""
         place.parentId = data.parentId ?? null
+        place.universeId = data.universeId ?? ''
         return place
     }
 
@@ -80,6 +82,7 @@ export const useProjectStore = defineStore('projects',() => {
         item.id = data.id
         item.description = data.description ?? ""
         item.ownerId = data.ownerId ?? null
+        item.universeId = data.universeId ?? ''
         return item
     }
 
@@ -120,6 +123,7 @@ export const useProjectStore = defineStore('projects',() => {
         plot.actorIds = data.actorIds ?? []
         plot.number = data.number ?? 0
         plot.goal = data.goal ?? ''
+        plot.universeId = data.universeId ?? ''
         return plot
     }
 
@@ -130,6 +134,7 @@ export const useProjectStore = defineStore('projects',() => {
         scene.description = data.description ?? ''
         scene.number = data.number ?? 0
         scene.povCharacterId = data.povCharacterId ?? null
+        scene.universeId = data.universeId ?? ''
         return scene
     }
 
@@ -139,6 +144,7 @@ export const useProjectStore = defineStore('projects',() => {
         group.id = data.id
         group.description = data.description ?? ""
         group.memberIds = data.memberIds ?? []
+        group.universeId = data.universeId ?? ''
         return group
     }
 
@@ -147,7 +153,7 @@ export const useProjectStore = defineStore('projects',() => {
         const timeline = new Timeline(data.name)
         timeline.id = data.id
         timeline.description = data.description ?? ""
-        timeline.universeId = data.universeId ?? ""
+        timeline.universeId = data.universeId ?? ''
         return timeline
     }
 

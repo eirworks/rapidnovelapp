@@ -8,6 +8,7 @@ import TimelineEventModal, { type EventFormPayload } from './TimelineEventModal.
 import { Event as TimelineEvent } from '../libs/models/Event'
 import type { Timeline } from '../libs/models/Timeline'
 import type { Character } from '../libs/models/Character'
+import type { Universe } from '../libs/models/Universe'
 import { useProjectStore } from '../store/projects'
 import VueIcon from '@kalimahapps/vue-icons/VueIcon'
 
@@ -21,6 +22,18 @@ const timeline = computed<Timeline | null>(
   () => project.value?.database.timelines.find((item) => item.id === props.id) ?? null,
 )
 const characters = computed<Character[]>(() => project.value?.database.characters ?? [])
+
+/** Universes available to resolve the timeline's universe name. */
+const universes = computed<Universe[]>(
+  () => project.value?.database.universes ?? [],
+)
+
+/** Display name of the timeline's universe, or null when unassigned. */
+const universeName = computed<string | null>(() => {
+  const universeId = timeline.value?.universeId
+  if (!universeId) return null
+  return universes.value.find((u) => u.id === universeId)?.name ?? null
+})
 const events = computed<TimelineEvent[]>(() =>
   [...(project.value?.database.events ?? [])]
     .filter((event) => event.timelineId === props.id)
@@ -112,6 +125,12 @@ function formatDate(date: string): string {
           <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
             {{ timeline.name }}
           </h1>
+          <p
+            v-if="universeName"
+            class="mt-1 text-sm font-medium text-emerald-600 dark:text-emerald-400"
+          >
+            {{ universeName }}
+          </p>
           <div class="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
             <span v-if="displayedDescription">{{ displayedDescription }}</span>
             <span v-else class="text-slate-400 dark:text-slate-500">No description yet.</span>

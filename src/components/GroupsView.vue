@@ -5,6 +5,7 @@ import AppButton from './ui/AppButton.vue'
 import Breadcrumb from './ui/Breadcrumb.vue'
 import { useProjectStore } from '../store/projects'
 import type { Group, GroupType } from '../libs/models/Group'
+import type { Universe } from '../libs/models/Universe'
 import VueIcon from '@kalimahapps/vue-icons/VueIcon'
 
 const emit = defineEmits<{
@@ -19,6 +20,17 @@ const { project } = storeToRefs(projectStore)
 const confirmDeleteId = ref<string | null>(null)
 
 const groups = computed<Group[]>(() => project.value?.database.groups ?? [])
+
+/** Universes available to resolve a group's universe name. */
+const universes = computed<Universe[]>(
+  () => project.value?.database.universes ?? [],
+)
+
+/** Display name of the universe a group belongs to, or null when unassigned. */
+function universeName(group: Group): string | null {
+  if (!group.universeId) return null
+  return universes.value.find((u) => u.id === group.universeId)?.name ?? null
+}
 
 /** Tailwind badge classes per group type, for both light and dark themes. */
 const typeStyles: Record<GroupType, string> = {
@@ -82,6 +94,12 @@ function viewGroup(group: Group) {
           <div class="min-w-0 flex-1">
             <span class="block truncate text-sm font-medium text-slate-800 dark:text-slate-100">
               {{ group.name }}
+            </span>
+            <span
+              v-if="universeName(group)"
+              class="block truncate text-xs text-emerald-600 dark:text-emerald-400"
+            >
+              {{ universeName(group) }}
             </span>
             <span
               v-if="group.description"

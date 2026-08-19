@@ -36,6 +36,8 @@ export interface CharacterData {
   birthdate?: string | null
   aliases?: string[]
   description?: string
+  /** The universe this character belongs to, or empty when unassigned. */
+  universeId?: string
   /** Saved as a plain object because `Map`s are flattened during serialization. */
   data?: Record<string, string>
 }
@@ -45,6 +47,8 @@ export interface PlaceData {
   name: string
   description?: string
   parentId?: string | null
+  /** The universe this place belongs to, or empty when unassigned. */
+  universeId?: string
 }
 
 export interface ItemData {
@@ -53,6 +57,8 @@ export interface ItemData {
   type: string
   description?: string
   ownerId?: string | null
+  /** The universe this item belongs to, or empty when unassigned. */
+  universeId?: string
 }
 
 export interface GroupData {
@@ -61,6 +67,8 @@ export interface GroupData {
   type: string
   description?: string
   memberIds?: string[]
+  /** The universe this group belongs to, or empty when unassigned. */
+  universeId?: string
 }
 
 export interface TaskData {
@@ -92,7 +100,7 @@ export interface TimelineData {
   id: string
   name: string
   description?: string
-  /** Reserved for a future universe feature; unused for now. */
+  /** The universe this timeline belongs to, or empty when unassigned. */
   universeId?: string
 }
 
@@ -104,6 +112,8 @@ export interface PlotData {
   actorIds?: string[]
   number?: number
   goal?: string
+  /** The universe this plot belongs to, or empty when unassigned. */
+  universeId?: string
 }
 
 export interface SceneData {
@@ -113,6 +123,8 @@ export interface SceneData {
   plotId: string
   number?: number
   povCharacterId?: string | null
+  /** The universe this scene belongs to, or empty when unassigned. */
+  universeId?: string
 }
 
 export interface UniverseData {

@@ -9,6 +9,7 @@ import { useProjectStore } from '../store/projects'
 import type { Scene } from '../libs/models/Scene'
 import type { Plot } from '../libs/models/Plot'
 import type { Character } from '../libs/models/Character'
+import type { Universe } from '../libs/models/Universe'
 
 defineEmits<{ back: []; navigate: [view: string, params?: Record<string, string>] }>()
 
@@ -41,6 +42,18 @@ const characters = computed<Map<string, Character>>(() => {
     map.set(c.id, c)
   }
   return map
+})
+
+/** Universes available to resolve a scene's universe name. */
+const universes = computed<Universe[]>(
+  () => project.value?.database.universes ?? [],
+)
+
+/** Display name of the universe the selected scene belongs to, if any. */
+const universeName = computed<string | null>(() => {
+  const universeId = selectedScene.value?.universeId
+  if (!universeId) return null
+  return universes.value.find((u) => u.id === universeId)?.name ?? null
 })
 
 /** Full name of a character by id. */
@@ -186,6 +199,12 @@ watch(allScenes, (scenes) => {
                 class="mt-1 text-sm text-indigo-600 dark:text-indigo-400"
               >
                 {{ plotTitle(selectedScene.plotId) }}
+              </p>
+              <p
+                v-if="universeName"
+                class="mt-1 text-sm text-emerald-600 dark:text-emerald-400"
+              >
+                {{ universeName }}
               </p>
             </div>
 

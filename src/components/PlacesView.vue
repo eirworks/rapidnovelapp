@@ -6,6 +6,7 @@ import AppTextField from './ui/AppTextField.vue'
 import Breadcrumb from './ui/Breadcrumb.vue'
 import { useProjectStore } from '../store/projects'
 import type { Place } from '../libs/models/Place'
+import type { Universe } from '../libs/models/Universe'
 import VueIcon from '@kalimahapps/vue-icons/VueIcon'
 
 defineEmits<{ back: []; navigate: [view: string, params?: Record<string, string>] }>()
@@ -37,6 +38,18 @@ const filteredPlaces = computed<Place[]>(() => {
 const selectedPlace = computed<Place | null>(
   () => project.value?.database.places.find((p) => p.id === selectedId.value) ?? null,
 )
+
+/** Universes available to resolve a place's universe name. */
+const universes = computed<Universe[]>(
+  () => project.value?.database.universes ?? [],
+)
+
+/** Display name of the universe the selected place belongs to, if any. */
+const universeName = computed<string | null>(() => {
+  const universeId = selectedPlace.value?.universeId
+  if (!universeId) return null
+  return universes.value.find((u) => u.id === universeId)?.name ?? null
+})
 
 /** The place's free-text description. */
 const description = computed(() => selectedPlace.value?.description ?? '')
@@ -138,6 +151,12 @@ watch(allPlaces, (places) => {
             >
               {{ selectedPlace.name }}
             </h1>
+            <p
+              v-if="universeName"
+              class="mt-1 text-sm text-indigo-600 dark:text-indigo-400"
+            >
+              {{ universeName }}
+            </p>
 
             <!-- Top-right horizontal action menu -->
             <div class="flex shrink-0 items-center gap-1">

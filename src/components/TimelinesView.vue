@@ -7,6 +7,7 @@ import AppTextField from './ui/AppTextField.vue'
 import Breadcrumb from './ui/Breadcrumb.vue'
 import { useProjectStore } from '../store/projects'
 import { Timeline } from '../libs/models/Timeline'
+import type { Universe } from '../libs/models/Universe'
 import VueIcon from '@kalimahapps/vue-icons/VueIcon'
 
 defineEmits<{ back: []; navigate: [view: string, params?: Record<string, string>] }>()
@@ -18,6 +19,17 @@ const timelines = computed<Timeline[]>(
   () => project.value?.database.timelines ?? [],
 )
 
+/** Universes available for the universe selector and card labels. */
+const universes = computed<Universe[]>(
+  () => project.value?.database.universes ?? [],
+)
+
+/** Display name of the universe a timeline belongs to, or null when unassigned. */
+function universeName(timeline: Timeline): string | null {
+  if (!timeline.universeId) return null
+  return universes.value.find((u) => u.id === timeline.universeId)?.name ?? null
+}
+
 /** 1-2 character initial derived from the timeline name (used in the card box). */
 function initials(timeline: Timeline): string {
   return timeline.name.trim().slice(0, 2).toUpperCase()
@@ -28,11 +40,13 @@ const modalOpen = ref(false)
 const editingId = ref<string | null>(null)
 const name = ref('')
 const description = ref('')
+const universeId = ref('')
 
 function openCreate() {
   editingId.value = null
   name.value = ''
   description.value = ''
+  universeId.value = ''
   modalOpen.value = true
 }
 
@@ -40,6 +54,7 @@ function openEdit(timeline: Timeline) {
   editingId.value = timeline.id
   name.value = timeline.name
   description.value = timeline.description
+  universeId.value = timeline.universeId
   modalOpen.value = true
 }
 
@@ -49,6 +64,7 @@ function save() {
 
   const timeline = new Timeline(name.value.trim())
   timeline.description = description.value.trim()
+  timeline.universeId = universeId.value
 
   if (editingId.value) {
     timeline.id = editingId.value
@@ -104,6 +120,12 @@ function save() {
               :title="timeline.name"
             >
               {{ timeline.name }}
+            </p>
+            <p
+              v-if="universeName(timeline)"
+              class="mt-0.5 truncate text-sm text-emerald-600 dark:text-emerald-400"
+            >
+              {{ universeName(timeline) }}
             </p>
             <p
               v-if="timeline.description"
@@ -162,6 +184,24 @@ function save() {
             class="mt-1"
             placeholder="A brief description…"
           />
+        </label>
+
+        <label
+          class="block text-left text-sm font-medium text-slate-700 dark:text-slate-300"
+        >
+          Universe
+          <span class="font-normal text-slate-400 dark:text-slate-500">
+            (optional)
+          </span>
+          <select
+            v-model="universeId"
+            class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-50 dark:focus:ring-indigo-900"
+          >
+            <option value="">None</option>
+            <option v-for="universe in universes" :key="universe.id" :value="universe.id">
+              {{ universe.name }}
+            </option>
+          </select>
         </label>
 
         <div class="flex justify-end gap-3 pt-2">

@@ -1,13 +1,12 @@
 /**
- * A single entry in a project's timeline. Timelines are currently plain
- * named/described records; `universeId` is reserved for a future universe
- * feature and is not used yet.
+ * A single entry in a project's timeline. `universeId` links the timeline to
+ * the Universe it belongs to, or is empty when the timeline is unassigned.
  */
 export class Timeline {
     id: string // UUID
     name: string
 
-    /** Reserved for a future universe feature; unused for now. */
+    /** The universe this timeline belongs to, or empty when unassigned. */
     universeId: string = ""
 
     // non constructor properties

@@ -5,6 +5,7 @@ import AppTextField from './ui/AppTextField.vue'
 import Breadcrumb from './ui/Breadcrumb.vue'
 import { useProjectStore } from '../store/projects'
 import { Place } from '../libs/models/Place'
+import type { Universe } from '../libs/models/Universe'
 
 /**
  * Create/edit form for a single place. Handles every Place field except the
@@ -33,6 +34,11 @@ const existing = computed(() =>
 const id = ref(existing.value?.id ?? '')
 const name = ref(existing.value?.name ?? '')
 const description = ref(existing.value?.description ?? '')
+const universeId = ref(existing.value?.universeId ?? '')
+
+const universes = computed<Universe[]>(
+  () => project.value?.database.universes ?? [],
+)
 
 const title = computed(() => (isEdit.value ? 'Edit Place' : 'New Place'))
 
@@ -61,6 +67,7 @@ function save() {
   // If the id is empty, fill it with a fresh UUID.
   place.id = id.value.trim() || crypto.randomUUID()
   place.description = description.value
+  place.universeId = universeId.value
 
   if (isEdit.value) {
     project.value?.placeService.edit(place.id, place)
@@ -119,6 +126,20 @@ function save() {
           <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
             Name
             <AppTextField v-model="name" class="mt-1" placeholder="Paris" />
+          </label>
+
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+            Universe
+            <span class="font-normal text-slate-400 dark:text-slate-500">(optional)</span>
+            <select
+              v-model="universeId"
+              class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-50 dark:focus:ring-indigo-900"
+            >
+              <option value="">None</option>
+              <option v-for="universe in universes" :key="universe.id" :value="universe.id">
+                {{ universe.name }}
+              </option>
+            </select>
           </label>
         </form>
       </aside>

@@ -8,6 +8,7 @@ import { Group, GROUP_TYPES, type GroupType } from '../libs/models/Group'
 import type { Character } from '../libs/models/Character'
 import type { Place } from '../libs/models/Place'
 import type { Item } from '../libs/models/Item'
+import type { Universe } from '../libs/models/Universe'
 
 /**
  * Create/edit form for a single group. Props come from the route: `id` is
@@ -39,8 +40,13 @@ const name = ref(existing.value?.name ?? '')
 const type = ref<GroupType>(existing.value?.type ?? GROUP_TYPES[0])
 const description = ref(existing.value?.description ?? '')
 const memberIds = ref<string[]>(existing.value?.memberIds ?? [])
+const universeId = ref(existing.value?.universeId ?? '')
 
 const title = computed(() => (isEdit.value ? 'Edit Group' : 'New Group'))
+
+const universes = computed<Universe[]>(
+  () => project.value?.database.universes ?? [],
+)
 
 const characters = computed<Character[]>(() => project.value?.database.characters ?? [])
 const places = computed<Place[]>(() => project.value?.database.places ?? [])
@@ -94,6 +100,7 @@ function save() {
   group.id = id.value.trim() || crypto.randomUUID()
   group.description = description.value.trim()
   group.memberIds = [...memberIds.value]
+  group.universeId = universeId.value
 
   if (isEdit.value) {
     project.value?.groupService.edit(group.id, group)
@@ -162,6 +169,20 @@ function save() {
           >
             <option v-for="option in GROUP_TYPES" :key="option" :value="option">
               {{ option }}
+            </option>
+          </select>
+        </label>
+
+        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+          Universe
+          <span class="font-normal text-slate-400 dark:text-slate-500">(optional)</span>
+          <select
+            v-model="universeId"
+            class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-50 dark:focus:ring-indigo-900"
+          >
+            <option value="">None</option>
+            <option v-for="universe in universes" :key="universe.id" :value="universe.id">
+              {{ universe.name }}
             </option>
           </select>
         </label>

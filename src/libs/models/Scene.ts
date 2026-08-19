@@ -13,6 +13,9 @@ export class Scene {
     number: number = 0
     povCharacterId: string | null = null // Point-of-view character
 
+    /** The universe this scene belongs to, or empty when unassigned. */
+    universeId: string = ''
+
     constructor(title: string, plotId: string) {
         this.id = crypto.randomUUID()
         this.title = title

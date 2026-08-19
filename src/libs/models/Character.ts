@@ -7,6 +7,9 @@ export class Character {
     aliases: string[] = []
     description: string = ''
 
+    /** The universe this character belongs to, or empty when unassigned. */
+    universeId: string = ''
+
     // Other data
     data: Map<string, string> = new Map()
 

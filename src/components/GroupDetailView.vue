@@ -8,6 +8,7 @@ import type { Group, GroupType } from '../libs/models/Group'
 import type { Character } from '../libs/models/Character'
 import type { Place } from '../libs/models/Place'
 import type { Item } from '../libs/models/Item'
+import type { Universe } from '../libs/models/Universe'
 import VueIcon from '@kalimahapps/vue-icons/VueIcon'
 
 /**
@@ -29,6 +30,17 @@ const characters = computed<Character[]>(() => project.value?.database.character
 const places = computed<Place[]>(() => project.value?.database.places ?? [])
 const items = computed<Item[]>(() => project.value?.database.items ?? [])
 
+/** Universes available to resolve the group's universe name. */
+const universes = computed<Universe[]>(
+  () => project.value?.database.universes ?? [],
+)
+
+/** Display name of the group's universe, or null when unassigned. */
+const universeName = computed<string | null>(() => {
+  const universeId = group.value?.universeId
+  if (!universeId) return null
+  return universes.value.find((u) => u.id === universeId)?.name ?? null
+})
 /** Tailwind badge classes per group type, for both light and dark themes. */
 const typeStyles: Record<GroupType, string> = {
   character: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300',
@@ -109,6 +121,12 @@ function openMember(view: string, id: string) {
               <h2 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
                 {{ group.name }}
               </h2>
+              <p
+                v-if="universeName"
+                class="mt-1 text-sm text-emerald-600 dark:text-emerald-400"
+              >
+                {{ universeName }}
+              </p>
               <p
                 v-if="group.description"
                 class="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-slate-600 dark:text-slate-300"

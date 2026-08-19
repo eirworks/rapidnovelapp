@@ -14,6 +14,9 @@ export class Plot {
     number: number = 0
     goal: string = ''
 
+    /** The universe this plot belongs to, or empty when unassigned. */
+    universeId: string = ''
+
     constructor(name: string) {
         this.id = crypto.randomUUID()
         this.name = name

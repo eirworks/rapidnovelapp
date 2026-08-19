@@ -16,6 +16,9 @@ export class Group {
     /** Ids of the members in this group. Their meaning depends on `type`. */
     memberIds: string[] = []
 
+    /** The universe this group belongs to, or empty when unassigned. */
+    universeId: string = ''
+
     constructor(name: string, type: GroupType) {
         this.id = crypto.randomUUID()
         this.name = name

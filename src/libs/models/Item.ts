@@ -25,6 +25,9 @@ export class Item {
     /** The id of the owning character, or null when the item has no owner. */
     ownerId: string | null = null
 
+    /** The universe this item belongs to, or empty when unassigned. */
+    universeId: string = ''
+
     constructor(name: string, type: ItemType) {
         this.id = crypto.randomUUID()
         this.name = name

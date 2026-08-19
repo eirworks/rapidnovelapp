@@ -6,6 +6,7 @@ import AppTextField from './ui/AppTextField.vue'
 import Breadcrumb from './ui/Breadcrumb.vue'
 import { useProjectStore } from '../store/projects'
 import type { Character } from '../libs/models/Character'
+import type { Universe } from '../libs/models/Universe'
 import VueIcon from '@kalimahapps/vue-icons/VueIcon'
 
 defineEmits<{ back: []; navigate: [view: string, params?: Record<string, string>] }>()
@@ -48,6 +49,18 @@ const filteredCharacters = computed<Character[]>(() => {
 const selectedCharacter = computed<Character | null>(
   () => project.value?.database.characters.find((c) => c.id === selectedId.value) ?? null,
 )
+
+/** Universes available to resolve a character's universe name. */
+const universes = computed<Universe[]>(
+  () => project.value?.database.universes ?? [],
+)
+
+/** Display name of the universe the selected character belongs to, if any. */
+const universeName = computed<string | null>(() => {
+  const universeId = selectedCharacter.value?.universeId
+  if (!universeId) return null
+  return universes.value.find((u) => u.id === universeId)?.name ?? null
+})
 
 /** The character's free-text description. */
 const description = computed(() => selectedCharacter.value?.description ?? '')
@@ -250,6 +263,19 @@ watch(allCharacters, (characters) => {
                   </th>
                   <td class="py-1.5 text-slate-900 dark:text-slate-50">
                     {{ selectedCharacter.aliases.join(', ') }}
+                  </td>
+                </tr>
+                <tr
+                  v-if="universeName"
+                  class="border-b border-slate-200 last:border-b-0 dark:border-slate-700"
+                >
+                  <th
+                    class="w-28 py-1.5 pr-2 text-left align-top font-medium text-slate-500 dark:text-slate-400"
+                  >
+                    Universe
+                  </th>
+                  <td class="py-1.5 text-slate-900 dark:text-slate-50">
+                    {{ universeName }}
                   </td>
                 </tr>
               </tbody>

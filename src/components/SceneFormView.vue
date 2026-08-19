@@ -6,6 +6,7 @@ import { useProjectStore } from '../store/projects'
 import { Scene } from '../libs/models/Scene'
 import type { Plot } from '../libs/models/Plot'
 import type { Character } from '../libs/models/Character'
+import type { Universe } from '../libs/models/Universe'
 
 /**
  * Create/edit form for a single scene. Handles every Scene field: title,
@@ -35,12 +36,18 @@ const description = ref(existing.value?.description ?? '')
 const plotId = ref(existing.value?.plotId ?? '')
 const povCharacterId = ref<string>(existing.value?.povCharacterId ?? '')
 const number = ref<number>(existing.value?.number ?? 0)
+const universeId = ref(existing.value?.universeId ?? '')
 
 const formTitle = computed(() => (isEdit.value ? 'Edit Scene' : 'New Scene'))
 
 /** Plots available for the parent selector. */
 const plots = computed<Plot[]>(
   () => project.value?.database.plots ?? [],
+)
+
+/** Universes available for the universe selector. */
+const universes = computed<Universe[]>(
+  () => project.value?.database.universes ?? [],
 )
 
 /** Characters available for the POV selector. */
@@ -69,6 +76,7 @@ function save() {
   scene.description = description.value.trim()
   scene.povCharacterId = povCharacterId.value || null
   scene.number = number.value
+  scene.universeId = universeId.value
 
   if (isEdit.value) {
     project.value?.sceneService.edit(scene.id, scene)
@@ -174,6 +182,20 @@ function save() {
             <option value="">Select a plot…</option>
             <option v-for="plot in plots" :key="plot.id" :value="plot.id">
               {{ plot.name }}
+            </option>
+          </select>
+        </label>
+
+        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+          Universe
+          <span class="font-normal text-slate-400 dark:text-slate-500">(optional)</span>
+          <select
+            v-model="universeId"
+            class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-50 dark:focus:ring-indigo-900"
+          >
+            <option value="">None</option>
+            <option v-for="universe in universes" :key="universe.id" :value="universe.id">
+              {{ universe.name }}
             </option>
           </select>
         </label>

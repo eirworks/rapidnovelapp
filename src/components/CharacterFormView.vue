@@ -5,6 +5,7 @@ import AppTextField from './ui/AppTextField.vue'
 import Breadcrumb from './ui/Breadcrumb.vue'
 import { useProjectStore } from '../store/projects'
 import { Character } from '../libs/models/Character'
+import type { Universe } from '../libs/models/Universe'
 
 /**
  * Create/edit form for a single character. Handles every Character field
@@ -37,6 +38,11 @@ const isFemale = ref(existing.value?.isFemale ?? false)
 const birthdate = ref(existing.value?.birthdate ?? '')
 const aliasesText = ref(existing.value?.aliases.join(', ') ?? '')
 const description = ref(existing.value?.description ?? '')
+const universeId = ref(existing.value?.universeId ?? '')
+
+const universes = computed<Universe[]>(
+  () => project.value?.database.universes ?? [],
+)
 
 const title = computed(() => (isEdit.value ? 'Edit Character' : 'New Character'))
 
@@ -74,6 +80,7 @@ function save() {
     .map((alias) => alias.trim())
     .filter(Boolean)
   character.description = description.value
+  character.universeId = universeId.value
 
   if (isEdit.value) {
     project.value?.characterService.edit(character.id, character)
@@ -167,6 +174,20 @@ function save() {
               class="mt-1"
               placeholder="Jane Doe, The Doctor, J"
             />
+          </label>
+
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+            Universe
+            <span class="font-normal text-slate-400 dark:text-slate-500">(optional)</span>
+            <select
+              v-model="universeId"
+              class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-50 dark:focus:ring-indigo-900"
+            >
+              <option value="">None</option>
+              <option v-for="universe in universes" :key="universe.id" :value="universe.id">
+                {{ universe.name }}
+              </option>
+            </select>
           </label>
         </form>
       </aside>
