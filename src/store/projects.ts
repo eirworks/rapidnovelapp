@@ -8,7 +8,8 @@ import { TaskGroup } from "../libs/models/TaskGroup";
 import { Group } from "../libs/models/Group";
 import { Timeline } from "../libs/models/Timeline";
 import { Event } from "../libs/models/Event";
-import type { CharacterData, ItemData, PlaceData, ProjectData, TaskData, TaskGroupData, GroupData, TimelineData, EventData } from "../libs/models/ProjectData";
+import { Plot } from "../libs/models/Plot";
+import type { CharacterData, ItemData, PlaceData, ProjectData, TaskData, TaskGroupData, GroupData, TimelineData, EventData, PlotData } from "../libs/models/ProjectData";
 import { computed, ref } from "vue";
 
 export const useProjectStore = defineStore('projects',() => {
@@ -40,7 +41,7 @@ export const useProjectStore = defineStore('projects',() => {
         loaded.database.tasks = (data.database?.tasks ?? []).map(toTask)
         loaded.database.taskGroups = (data.database?.taskGroups ?? []).map(toTaskGroup)
         loaded.database.groups = (data.database?.groups ?? []).map(toGroup)
-        loaded.database.plots = data.database?.plots ?? []
+        loaded.database.plots = (data.database?.plots ?? []).map(toPlot)
         loaded.database.universe = data.database?.universe ?? []
         loaded.database.timelines = (data.database?.timelines ?? []).map(toTimeline)
         loaded.database.events = (data.database?.events ?? []).map(toEvent)
@@ -105,6 +106,18 @@ export const useProjectStore = defineStore('projects',() => {
         event.description = data.description ?? ''
         event.actorIds = data.actorIds ?? []
         return event
+    }
+
+    /** Rebuilds a Plot instance from its saved plain-data shape. */
+    function toPlot(data: PlotData): Plot {
+        const plot = new Plot(data.name)
+        plot.id = data.id
+        plot.description = data.description ?? ''
+        plot.placeId = data.placeId ?? null
+        plot.actorIds = data.actorIds ?? []
+        plot.number = data.number ?? 0
+        plot.goal = data.goal ?? ''
+        return plot
     }
 
     /** Rebuilds a Group instance from its saved plain-data shape. */

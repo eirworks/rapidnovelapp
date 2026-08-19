@@ -6,6 +6,7 @@ import type { TaskGroup } from "./TaskGroup";
 import type { Group } from "./Group";
 import type { Timeline } from "./Timeline";
 import type { Event } from "./Event";
+import type { Plot } from "./Plot";
 
 export class Database {
     characters: Character[] = [];
@@ -17,7 +18,6 @@ export class Database {
     timelines: Timeline[] = [];
     events: Event[] = [];
 
-    // TODO change type when the class is ready
-    plots: string[] = [];
+    plots: Plot[] = [];
     universe: string[] = [];
 }

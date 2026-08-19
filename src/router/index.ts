@@ -20,6 +20,8 @@ import TimelineView from '../components/TimelineView.vue'
 import ReportsView from '../components/ReportsView.vue'
 import QuickWriteView from '../components/QuickWriteView.vue'
 import SettingsView from '../components/SettingsView.vue'
+import PlotsView from '../components/PlotsView.vue'
+import PlotFormView from '../components/PlotFormView.vue'
 
 /**
  * Titles shown by PlaceholderView for features that are not implemented yet.
@@ -28,7 +30,6 @@ import SettingsView from '../components/SettingsView.vue'
  */
 const placeholderTitles: Record<string, string> = {
   'save-project': 'Save Project',
-  plots: 'Plots',
   draft: 'Draft',
   story: 'Story',
   chapters: 'Chapters',
@@ -108,6 +109,19 @@ const routes: RouteRecordRaw[] = [
     props: true,
   },
   { path: '/reports', name: 'reports', component: ReportsView },
+  { path: '/plots', name: 'plots', component: PlotsView },
+  {
+    path: '/plots/new',
+    name: 'plot-new',
+    component: PlotFormView,
+    props: { id: 'new' },
+  },
+  {
+    path: '/plots/:id',
+    name: 'plot-edit',
+    component: PlotFormView,
+    props: true,
+  },
   ...Object.entries(placeholderTitles).map(
     ([name, title]): RouteRecordRaw => ({
       path: `/${name}`,
