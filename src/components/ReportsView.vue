@@ -25,7 +25,7 @@ const cards = computed<StatItem[]>(() => {
     { label: 'Tasks', value: stats.tasks },
     { label: 'Task Groups', value: stats.taskGroups },
     { label: 'Plots', value: stats.plots },
-    { label: 'Universe', value: stats.universe },
+    { label: 'Universes', value: stats.universes },
     { label: 'Timeline', value: stats.timeline },
   ]
 })

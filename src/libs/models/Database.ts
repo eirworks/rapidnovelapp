@@ -7,6 +7,8 @@ import type { Group } from "./Group";
 import type { Timeline } from "./Timeline";
 import type { Event } from "./Event";
 import type { Plot } from "./Plot";
+import type { Scene } from "./Scene";
+import type { Universe } from "./Universe";
 
 export class Database {
     characters: Character[] = [];
@@ -19,5 +21,6 @@ export class Database {
     events: Event[] = [];
 
     plots: Plot[] = [];
-    universe: string[] = [];
+    scenes: Scene[] = [];
+    universes: Universe[] = [];
 }

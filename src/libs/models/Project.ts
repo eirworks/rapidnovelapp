@@ -8,6 +8,8 @@ import { GroupService } from "../services/GroupService"
 import { TimelineService } from "../services/TimelineService"
 import { EventService } from "../services/EventService"
 import { PlotService } from "../services/PlotService"
+import { SceneService } from "../services/SceneService"
+import { UniverseService } from "../services/UniverseService"
 
 export class Project {
     id: string // UUID formatted
@@ -28,6 +30,8 @@ export class Project {
     timelineService: TimelineService = new TimelineService(this.database)
     eventService: EventService = new EventService(this.database)
     plotService: PlotService = new PlotService(this.database)
+    sceneService: SceneService = new SceneService(this.database)
+    universeService: UniverseService = new UniverseService(this.database)
 
     // TODO update these types
     contents: string[] = []

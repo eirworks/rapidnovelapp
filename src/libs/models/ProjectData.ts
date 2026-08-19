@@ -22,7 +22,8 @@ export interface ProjectDatabaseData {
   tasks?: TaskData[]
   taskGroups?: TaskGroupData[]
   plots?: PlotData[]
-  universe?: string[]
+  scenes?: SceneData[]
+  universes?: UniverseData[]
   timelines?: TimelineData[]
   events?: EventData[]
 }
@@ -103,6 +104,21 @@ export interface PlotData {
   actorIds?: string[]
   number?: number
   goal?: string
+}
+
+export interface SceneData {
+  id: string
+  title: string
+  description?: string
+  plotId: string
+  number?: number
+  povCharacterId?: string | null
+}
+
+export interface UniverseData {
+  id: string
+  name: string
+  description?: string
 }
 
 /** A lightweight project entry shown in the Load Project list. */

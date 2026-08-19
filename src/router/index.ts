@@ -22,6 +22,9 @@ import QuickWriteView from '../components/QuickWriteView.vue'
 import SettingsView from '../components/SettingsView.vue'
 import PlotsView from '../components/PlotsView.vue'
 import PlotFormView from '../components/PlotFormView.vue'
+import ScenesView from '../components/ScenesView.vue'
+import SceneFormView from '../components/SceneFormView.vue'
+import UniversesView from '../components/UniversesView.vue'
 
 /**
  * Titles shown by PlaceholderView for features that are not implemented yet.
@@ -108,6 +111,7 @@ const routes: RouteRecordRaw[] = [
     component: TimelineView,
     props: true,
   },
+  { path: '/universes', name: 'universes', component: UniversesView },
   { path: '/reports', name: 'reports', component: ReportsView },
   { path: '/plots', name: 'plots', component: PlotsView },
   {
@@ -120,6 +124,19 @@ const routes: RouteRecordRaw[] = [
     path: '/plots/:id',
     name: 'plot-edit',
     component: PlotFormView,
+    props: true,
+  },
+  { path: '/scenes', name: 'scenes', component: ScenesView },
+  {
+    path: '/scenes/new',
+    name: 'scene-new',
+    component: SceneFormView,
+    props: { id: 'new' },
+  },
+  {
+    path: '/scenes/:id',
+    name: 'scene-edit',
+    component: SceneFormView,
     props: true,
   },
   ...Object.entries(placeholderTitles).map(

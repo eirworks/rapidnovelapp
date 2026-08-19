@@ -9,7 +9,9 @@ import { Group } from "../libs/models/Group";
 import { Timeline } from "../libs/models/Timeline";
 import { Event } from "../libs/models/Event";
 import { Plot } from "../libs/models/Plot";
-import type { CharacterData, ItemData, PlaceData, ProjectData, TaskData, TaskGroupData, GroupData, TimelineData, EventData, PlotData } from "../libs/models/ProjectData";
+import { Scene } from "../libs/models/Scene";
+import type { CharacterData, ItemData, PlaceData, ProjectData, TaskData, TaskGroupData, GroupData, TimelineData, EventData, PlotData, SceneData, UniverseData } from "../libs/models/ProjectData";
+import { Universe } from "../libs/models/Universe";
 import { computed, ref } from "vue";
 
 export const useProjectStore = defineStore('projects',() => {
@@ -42,7 +44,8 @@ export const useProjectStore = defineStore('projects',() => {
         loaded.database.taskGroups = (data.database?.taskGroups ?? []).map(toTaskGroup)
         loaded.database.groups = (data.database?.groups ?? []).map(toGroup)
         loaded.database.plots = (data.database?.plots ?? []).map(toPlot)
-        loaded.database.universe = data.database?.universe ?? []
+        loaded.database.scenes = (data.database?.scenes ?? []).map(toScene)
+        loaded.database.universes = (data.database?.universes ?? []).map(toUniverse)
         loaded.database.timelines = (data.database?.timelines ?? []).map(toTimeline)
         loaded.database.events = (data.database?.events ?? []).map(toEvent)
         loaded.contents = data.contents ?? []
@@ -120,6 +123,16 @@ export const useProjectStore = defineStore('projects',() => {
         return plot
     }
 
+    /** Rebuilds a Scene instance from its saved plain-data shape. */
+    function toScene(data: SceneData): Scene {
+        const scene = new Scene(data.title, data.plotId)
+        scene.id = data.id
+        scene.description = data.description ?? ''
+        scene.number = data.number ?? 0
+        scene.povCharacterId = data.povCharacterId ?? null
+        return scene
+    }
+
     /** Rebuilds a Group instance from its saved plain-data shape. */
     function toGroup(data: GroupData): Group {
         const group = new Group(data.name, data.type as Group["type"])
@@ -136,6 +149,14 @@ export const useProjectStore = defineStore('projects',() => {
         timeline.description = data.description ?? ""
         timeline.universeId = data.universeId ?? ""
         return timeline
+    }
+
+    /** Rebuilds a Universe instance from its saved plain-data shape. */
+    function toUniverse(data: UniverseData): Universe {
+        const universe = new Universe(data.name)
+        universe.id = data.id
+        universe.description = data.description ?? ""
+        return universe
     }
 
     /**
@@ -170,7 +191,8 @@ export const useProjectStore = defineStore('projects',() => {
             tasks: db.tasks.length,
             taskGroups: db.taskGroups.length,
             plots: db.plots.length,
-            universe: db.universe.length,
+            scenes: db.scenes.length,
+            universes: db.universes.length,
             timeline: db.timelines.length,
         }
     })
