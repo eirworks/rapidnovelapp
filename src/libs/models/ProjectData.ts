@@ -18,6 +18,7 @@ export interface ProjectDatabaseData {
   characters?: CharacterData[]
   places?: PlaceData[]
   items?: ItemData[]
+  skills?: SkillData[]
   groups?: GroupData[]
   tasks?: TaskData[]
   taskGroups?: TaskGroupData[]
@@ -58,6 +59,16 @@ export interface ItemData {
   description?: string
   ownerId?: string | null
   /** The universe this item belongs to, or empty when unassigned. */
+  universeId?: string
+}
+
+export interface SkillData {
+  id: string
+  name: string
+  type: string
+  description?: string
+  ownerId?: string | null
+  /** The universe this skill belongs to, or empty when unassigned. */
   universeId?: string
 }
 

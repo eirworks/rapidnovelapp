@@ -14,6 +14,7 @@ export const menus: MenuGroup[] = [
       { label: 'Characters', view: 'characters', icon: 'bs:people-fill' },
       { label: 'Places', view: 'places', icon: 'bs:geo-alt' },
       { label: 'Items', view: 'items', icon: 'bs:box' },
+      { label: 'Skills', view: 'skills', icon: 'bs:stars' },
       { label: 'Groups', view: 'groups', icon: 'bs:collection' },
       { label: 'Timeline', view: 'timeline', icon: 'bs:clock-history' },
       { label: 'Universe', view: 'universes', icon: 'bs:globe-americas' },

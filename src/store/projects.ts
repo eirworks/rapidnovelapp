@@ -3,6 +3,7 @@ import { Project } from "../libs/models/Project";
 import { Character } from "../libs/models/Character";
 import { Place } from "../libs/models/Place";
 import { Item } from "../libs/models/Item";
+import { Skill } from "../libs/models/Skill";
 import { Task } from "../libs/models/Task";
 import { TaskGroup } from "../libs/models/TaskGroup";
 import { Group } from "../libs/models/Group";
@@ -10,7 +11,7 @@ import { Timeline } from "../libs/models/Timeline";
 import { Event } from "../libs/models/Event";
 import { Plot } from "../libs/models/Plot";
 import { Scene } from "../libs/models/Scene";
-import type { CharacterData, ItemData, PlaceData, ProjectData, TaskData, TaskGroupData, GroupData, TimelineData, EventData, PlotData, SceneData, UniverseData } from "../libs/models/ProjectData";
+import type { CharacterData, ItemData, PlaceData, ProjectData, TaskData, TaskGroupData, GroupData, TimelineData, EventData, PlotData, SceneData, UniverseData, SkillData } from "../libs/models/ProjectData";
 import { Universe } from "../libs/models/Universe";
 import { computed, ref } from "vue";
 
@@ -42,6 +43,7 @@ export const useProjectStore = defineStore('projects',() => {
         loaded.database.characters = (data.database?.characters ?? []).map(toCharacter)
         loaded.database.places = (data.database?.places ?? []).map(toPlace)
         loaded.database.items = (data.database?.items ?? []).map(toItem)
+        loaded.database.skills = (data.database?.skills ?? []).map(toSkill)
         loaded.database.tasks = (data.database?.tasks ?? []).map(toTask)
         loaded.database.taskGroups = (data.database?.taskGroups ?? []).map(toTaskGroup)
         loaded.database.groups = (data.database?.groups ?? []).map(toGroup)
@@ -86,6 +88,16 @@ export const useProjectStore = defineStore('projects',() => {
         item.ownerId = data.ownerId ?? null
         item.universeId = data.universeId ?? ''
         return item
+    }
+
+    /** Rebuilds a Skill instance from its saved plain-data shape. */
+    function toSkill(data: SkillData): Skill {
+        const skill = new Skill(data.name, data.type as Skill["type"])
+        skill.id = data.id
+        skill.description = data.description ?? ""
+        skill.ownerId = data.ownerId ?? null
+        skill.universeId = data.universeId ?? ''
+        return skill
     }
 
     /** Rebuilds a Task instance from its saved plain-data shape. */
@@ -178,6 +190,7 @@ export const useProjectStore = defineStore('projects',() => {
             database:
                 project.value.database.characters.length +
                 project.value.database.items.length +
+                project.value.database.skills.length +
                 project.value.database.places.length +
                 project.value.database.groups.length,
             contents: project.value.contents.length,
@@ -195,6 +208,7 @@ export const useProjectStore = defineStore('projects',() => {
             characters: db.characters.length,
             places: db.places.length,
             items: db.items.length,
+            skills: db.skills.length,
             groups: db.groups.length,
             tasks: db.tasks.length,
             taskGroups: db.taskGroups.length,

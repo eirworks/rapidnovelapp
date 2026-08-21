@@ -2,6 +2,7 @@ import { Database } from "./Database"
 import { CharacterService } from "../services/CharacterService"
 import { PlaceService } from "../services/PlaceService"
 import { ItemService } from "../services/ItemService"
+import { SkillService } from "../services/SkillService"
 import { TaskService } from "../services/TaskService"
 import { TaskGroupService } from "../services/TaskGroupService"
 import { GroupService } from "../services/GroupService"
@@ -24,6 +25,7 @@ export class Project {
     characterService: CharacterService = new CharacterService(this.database)
     placeService: PlaceService = new PlaceService(this.database)
     itemService: ItemService = new ItemService(this.database)
+    skillService: SkillService = new SkillService(this.database)
     taskService: TaskService = new TaskService(this.database)
     taskGroupService: TaskGroupService = new TaskGroupService(this.database)
     groupService: GroupService = new GroupService(this.database)

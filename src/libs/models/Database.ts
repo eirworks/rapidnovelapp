@@ -1,6 +1,7 @@
 import type { Character } from "./Character";
 import type { Place } from "./Place";
 import type { Item } from "./Item";
+import type { Skill } from "./Skill";
 import type { Task } from "./Task";
 import type { TaskGroup } from "./TaskGroup";
 import type { Group } from "./Group";
@@ -14,6 +15,7 @@ export class Database {
     characters: Character[] = [];
     places: Place[] = [];
     items: Item[] = [];
+    skills: Skill[] = [];
     groups: Group[] = [];
     tasks: Task[] = [];
     taskGroups: TaskGroup[] = [];

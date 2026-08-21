@@ -14,6 +14,8 @@ import PlacesView from '../components/PlacesView.vue'
 import PlaceFormView from '../components/PlaceFormView.vue'
 import ItemsView from '../components/ItemsView.vue'
 import ItemFormView from '../components/ItemFormView.vue'
+import SkillsView from '../components/SkillsView.vue'
+import SkillFormView from '../components/SkillFormView.vue'
 import GroupsView from '../components/GroupsView.vue'
 import GroupFormView from '../components/GroupFormView.vue'
 import GroupDetailView from '../components/GroupDetailView.vue'
@@ -85,6 +87,19 @@ const routes: RouteRecordRaw[] = [
     path: '/items/:id',
     name: 'item-edit',
     component: ItemFormView,
+    props: true,
+  },
+  { path: '/skills', name: 'skills', component: SkillsView },
+  {
+    path: '/skills/new',
+    name: 'skill-new',
+    component: SkillFormView,
+    props: { id: 'new' },
+  },
+  {
+    path: '/skills/:id',
+    name: 'skill-edit',
+    component: SkillFormView,
     props: true,
   },
   { path: '/groups', name: 'groups', component: GroupsView },
@@ -175,9 +190,9 @@ export const router = createRouter({
 })
 
 /**
- * Route guard: entering a feature page (characters, places, items, groups,
- * timeline, universes, plots, scenes, draft, story, chapters, tasks, reports)
- * while no project is loaded redirects to the home view. Home, settings,
+ * Route guard: entering a feature page (characters, places, items, skills,
+ * groups, timeline, universes, plots, scenes, draft, story, chapters, tasks,
+ * reports) while no project is loaded redirects to the home view. Home, settings,
  * quick-write and the new/open project flows stay public.
  */
 router.beforeEach((to) => {
