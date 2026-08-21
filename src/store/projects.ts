@@ -65,6 +65,7 @@ export const useProjectStore = defineStore('projects',() => {
         character.aliases = data.aliases ?? []
         character.description = data.description ?? ''
         character.universeId = data.universeId ?? ''
+        character.skillIds = data.skillIds ?? []
         // `data` was flattened to a plain object during save; restore the Map.
         character.data = new Map(Object.entries(data.data ?? {}))
         return character

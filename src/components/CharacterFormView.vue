@@ -39,10 +39,22 @@ const birthdate = ref(existing.value?.birthdate ?? '')
 const aliasesText = ref(existing.value?.aliases.join(', ') ?? '')
 const description = ref(existing.value?.description ?? '')
 const universeId = ref(existing.value?.universeId ?? '')
+const skillIds = ref<string[]>(existing.value?.skillIds ?? [])
 
 const universes = computed<Universe[]>(
   () => project.value?.database.universes ?? [],
 )
+
+const skills = computed(() => project.value?.database.skills ?? [])
+
+/** Toggles a skill id in the selected set. */
+function toggleSkill(skillId: string) {
+  if (skillIds.value.includes(skillId)) {
+    skillIds.value = skillIds.value.filter((id) => id !== skillId)
+  } else {
+    skillIds.value = [...skillIds.value, skillId]
+  }
+}
 
 const title = computed(() => (isEdit.value ? 'Edit Character' : 'New Character'))
 
@@ -81,6 +93,7 @@ function save() {
     .filter(Boolean)
   character.description = description.value
   character.universeId = universeId.value
+  character.skillIds = [...skillIds.value]
 
   if (isEdit.value) {
     project.value?.characterService.edit(character.id, character)
@@ -189,6 +202,38 @@ function save() {
               </option>
             </select>
           </label>
+
+          <fieldset>
+            <legend class="text-sm font-medium text-slate-700 dark:text-slate-300">
+              Skills
+              <span class="font-normal text-slate-400 dark:text-slate-500">(optional)</span>
+            </legend>
+
+            <div
+              v-if="skills.length > 0"
+              class="mt-2 max-h-56 space-y-1 overflow-y-auto rounded-lg border border-slate-200 p-2 dark:border-slate-600"
+            >
+              <label
+                v-for="skill in skills"
+                :key="skill.id"
+                class="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-sm text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-700"
+              >
+                <input
+                  type="checkbox"
+                  class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-800"
+                  :checked="skillIds.includes(skill.id)"
+                  @change="toggleSkill(skill.id)"
+                />
+                <span class="truncate">{{ skill.name }}</span>
+                <span class="ml-auto shrink-0 text-xs text-slate-400 dark:text-slate-500">
+                  {{ skill.type }}
+                </span>
+              </label>
+            </div>
+            <p v-else class="mt-1 text-sm text-slate-400 dark:text-slate-500">
+              No skills available yet.
+            </p>
+          </fieldset>
         </form>
       </aside>
     </div>

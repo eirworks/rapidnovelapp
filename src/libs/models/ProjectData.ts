@@ -39,6 +39,8 @@ export interface CharacterData {
   description?: string
   /** The universe this character belongs to, or empty when unassigned. */
   universeId?: string
+  /** Ids of the skills this character possesses (many-to-many with Skill). */
+  skillIds?: string[]
   /** Saved as a plain object because `Map`s are flattened during serialization. */
   data?: Record<string, string>
 }

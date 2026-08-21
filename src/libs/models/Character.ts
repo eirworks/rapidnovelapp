@@ -10,6 +10,9 @@ export class Character {
     /** The universe this character belongs to, or empty when unassigned. */
     universeId: string = ''
 
+    /** Ids of the skills this character possesses (many-to-many with Skill). */
+    skillIds: string[] = []
+
     // Other data
     data: Map<string, string> = new Map()
 
