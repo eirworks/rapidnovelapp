@@ -1,6 +1,9 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 
+import { useProjectStore } from '../store/projects'
+import { menus } from '../libs/features'
+
 import HomeView from '../components/HomeView.vue'
 import CharactersView from '../components/CharactersView.vue'
 import CharacterFormView from '../components/CharacterFormView.vue'
@@ -151,11 +154,39 @@ const routes: RouteRecordRaw[] = [
   { path: '/:pathMatch(.*)*', redirect: '/' },
 ]
 
+/**
+ * Views that can only be shown while a project is open. Derived from the
+ * Database / Write / Management menus in features.ts, so newly added menu
+ * items are protected automatically.
+ *
+ * Matching uses the route's first path segment (e.g. 'characters' in
+ * '/characters/:id'), which covers the form and detail sub-routes of each
+ * feature as well as the top-level list views.
+ */
+const protectedViews = new Set(
+  menus.flatMap((group) => group.items.map((item) => item.view)),
+)
+
 export const router = createRouter({
   // Hash history works both from the Vite dev server and from the file:// URL
   // used by packaged Electron builds.
   history: createWebHashHistory(),
   routes,
+})
+
+/**
+ * Route guard: entering a feature page (characters, places, items, groups,
+ * timeline, universes, plots, scenes, draft, story, chapters, tasks, reports)
+ * while no project is loaded redirects to the home view. Home, settings,
+ * quick-write and the new/open project flows stay public.
+ */
+router.beforeEach((to) => {
+  if (protectedViews.has(to.path.split('/')[1])) {
+    const projectStore = useProjectStore()
+    if (!projectStore.project) {
+      return { name: 'home' }
+    }
+  }
 })
 
 export default router
