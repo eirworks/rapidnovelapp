@@ -30,6 +30,7 @@ import PlotFormView from '../components/PlotFormView.vue'
 import ScenesView from '../components/ScenesView.vue'
 import SceneFormView from '../components/SceneFormView.vue'
 import UniversesView from '../components/UniversesView.vue'
+import StoriesView from '../components/StoriesView.vue'
 
 /**
  * Titles shown by PlaceholderView for features that are not implemented yet.
@@ -39,7 +40,6 @@ import UniversesView from '../components/UniversesView.vue'
 const placeholderTitles: Record<string, string> = {
   'save-project': 'Save Project',
   draft: 'Draft',
-  story: 'Story',
   chapters: 'Chapters',
   help: 'Help',
 }
@@ -130,6 +130,7 @@ const routes: RouteRecordRaw[] = [
     props: true,
   },
   { path: '/universes', name: 'universes', component: UniversesView },
+  { path: '/story', name: 'story', component: StoriesView },
   { path: '/reports', name: 'reports', component: ReportsView },
   { path: '/plots', name: 'plots', component: PlotsView },
   {

@@ -39,6 +39,7 @@ async function saveProject() {
     description: project.description,
     author: project.author,
     database: project.database,
+    content: project.content,
     contents: project.contents,
     manager: project.manager,
   }

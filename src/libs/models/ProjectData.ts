@@ -10,6 +10,7 @@ export interface ProjectData {
   description: string | null
   author: string | null
   database?: ProjectDatabaseData
+  content?: ProjectContentData
   contents?: string[]
   manager?: string[]
 }
@@ -27,6 +28,14 @@ export interface ProjectDatabaseData {
   universes?: UniverseData[]
   timelines?: TimelineData[]
   events?: EventData[]
+}
+
+/**
+ * The persisted shape of a project's writing side (`Content`). Stories live
+ * here; chapters and drafts will be added alongside them.
+ */
+export interface ProjectContentData {
+  stories?: StoryData[]
 }
 
 export interface CharacterData {
@@ -144,6 +153,14 @@ export interface UniverseData {
   id: string
   name: string
   description?: string
+}
+
+export interface StoryData {
+  id: string
+  title: string
+  summary?: string
+  /** How the story is structured: a single book or chapter-based. */
+  format?: string
 }
 
 /** A lightweight project entry shown in the Load Project list. */

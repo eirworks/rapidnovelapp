@@ -1,4 +1,5 @@
 import { Database } from "./Database"
+import { Content } from "./Content"
 import { CharacterService } from "../services/CharacterService"
 import { PlaceService } from "../services/PlaceService"
 import { ItemService } from "../services/ItemService"
@@ -11,6 +12,7 @@ import { EventService } from "../services/EventService"
 import { PlotService } from "../services/PlotService"
 import { SceneService } from "../services/SceneService"
 import { UniverseService } from "../services/UniverseService"
+import { StoryService } from "../services/StoryService"
 
 export class Project {
     id: string // UUID formatted
@@ -20,6 +22,7 @@ export class Project {
 
     // Database, Content, and Management
     database: Database = new Database()
+    content: Content = new Content()
 
     // Services
     characterService: CharacterService = new CharacterService(this.database)
@@ -34,9 +37,9 @@ export class Project {
     plotService: PlotService = new PlotService(this.database)
     sceneService: SceneService = new SceneService(this.database)
     universeService: UniverseService = new UniverseService(this.database)
+    storyService: StoryService = new StoryService(this.content)
 
     // TODO update these types
-    contents: string[] = []
     manager: string[] = []
 
     constructor(id: string, name: string, description: string, author: string) {

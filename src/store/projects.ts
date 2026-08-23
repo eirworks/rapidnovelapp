@@ -11,8 +11,9 @@ import { Timeline } from "../libs/models/Timeline";
 import { Event } from "../libs/models/Event";
 import { Plot } from "../libs/models/Plot";
 import { Scene } from "../libs/models/Scene";
-import type { CharacterData, ItemData, PlaceData, ProjectData, TaskData, TaskGroupData, GroupData, TimelineData, EventData, PlotData, SceneData, UniverseData, SkillData } from "../libs/models/ProjectData";
+import type { CharacterData, ItemData, PlaceData, ProjectData, TaskData, TaskGroupData, GroupData, TimelineData, EventData, PlotData, SceneData, UniverseData, SkillData, StoryData } from "../libs/models/ProjectData";
 import { Universe } from "../libs/models/Universe";
+import { Story } from "../libs/models/Story";
 import { computed, ref } from "vue";
 
 export const useProjectStore = defineStore('projects',() => {
@@ -52,6 +53,7 @@ export const useProjectStore = defineStore('projects',() => {
         loaded.database.universes = (data.database?.universes ?? []).map(toUniverse)
         loaded.database.timelines = (data.database?.timelines ?? []).map(toTimeline)
         loaded.database.events = (data.database?.events ?? []).map(toEvent)
+        loaded.content.stories = (data.content?.stories ?? []).map(toStory)
         loaded.contents = data.contents ?? []
         loaded.manager = data.manager ?? []
         project.value = loaded
@@ -180,10 +182,20 @@ export const useProjectStore = defineStore('projects',() => {
         return universe
     }
 
+    /** Rebuilds a Story instance from its saved plain-data shape. */
+    function toStory(data: StoryData): Story {
+        const story = new Story(data.title)
+        story.id = data.id
+        story.summary = data.summary ?? ''
+        story.format = (data.format ?? 'book') as Story["format"]
+        return story
+    }
+
     /**
      * Simple aggregate counts shown as stats on the home view.
-     * `database` sums the Character/Item/Place/Group counts; `contents` is 0
-     * because the contents feature is not implemented yet.
+     * `database` sums the Character/Item/Place/Group counts; `contents` counts
+     * the entries in the project's Content (stories today, chapters and drafts
+     * later); `tasks` counts the task list.
      */
     const projectStats = computed(() => {
         if (!project.value) return null
@@ -194,7 +206,7 @@ export const useProjectStore = defineStore('projects',() => {
                 project.value.database.skills.length +
                 project.value.database.places.length +
                 project.value.database.groups.length,
-            contents: project.value.contents.length,
+            contents: project.value.content.stories.length,
             tasks: project.value.database.tasks.length,
         }
     })
