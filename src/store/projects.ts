@@ -11,9 +11,10 @@ import { Timeline } from "../libs/models/Timeline";
 import { Event } from "../libs/models/Event";
 import { Plot } from "../libs/models/Plot";
 import { Scene } from "../libs/models/Scene";
-import type { CharacterData, ItemData, PlaceData, ProjectData, TaskData, TaskGroupData, GroupData, TimelineData, EventData, PlotData, SceneData, UniverseData, SkillData, StoryData } from "../libs/models/ProjectData";
+import type { CharacterData, ItemData, PlaceData, ProjectData, TaskData, TaskGroupData, GroupData, TimelineData, EventData, PlotData, SceneData, UniverseData, SkillData, StoryData, ChapterData } from "../libs/models/ProjectData";
 import { Universe } from "../libs/models/Universe";
 import { Story } from "../libs/models/Story";
+import { Chapter } from "../libs/models/Chapter";
 import { computed, ref } from "vue";
 
 export const useProjectStore = defineStore('projects',() => {
@@ -54,6 +55,7 @@ export const useProjectStore = defineStore('projects',() => {
         loaded.database.timelines = (data.database?.timelines ?? []).map(toTimeline)
         loaded.database.events = (data.database?.events ?? []).map(toEvent)
         loaded.content.stories = (data.content?.stories ?? []).map(toStory)
+        loaded.content.chapters = (data.content?.chapters ?? []).map(toChapter)
         loaded.contents = data.contents ?? []
         loaded.manager = data.manager ?? []
         project.value = loaded
@@ -189,6 +191,18 @@ export const useProjectStore = defineStore('projects',() => {
         story.summary = data.summary ?? ''
         story.format = (data.format ?? 'book') as Story["format"]
         return story
+    }
+
+    /** Rebuilds a Chapter instance from its saved plain-data shape. */
+    function toChapter(data: ChapterData): Chapter {
+        const chapter = new Chapter(data.storyId, data.title)
+        chapter.id = data.id
+        chapter.number = data.number ?? 0
+        chapter.content = data.content ?? ''
+        chapter.note = data.note ?? null
+        chapter.warning = data.warning ?? null
+        chapter.publishedAt = data.publishedAt ?? null
+        return chapter
     }
 
     /**

@@ -13,6 +13,7 @@ import { PlotService } from "../services/PlotService"
 import { SceneService } from "../services/SceneService"
 import { UniverseService } from "../services/UniverseService"
 import { StoryService } from "../services/StoryService"
+import { ChapterService } from "../services/ChapterService"
 
 export class Project {
     id: string // UUID formatted
@@ -38,6 +39,7 @@ export class Project {
     sceneService: SceneService = new SceneService(this.database)
     universeService: UniverseService = new UniverseService(this.database)
     storyService: StoryService = new StoryService(this.content)
+    chapterService: ChapterService = new ChapterService(this.content)
 
     // TODO update these types
     manager: string[] = []

@@ -31,6 +31,7 @@ import ScenesView from '../components/ScenesView.vue'
 import SceneFormView from '../components/SceneFormView.vue'
 import UniversesView from '../components/UniversesView.vue'
 import StoriesView from '../components/StoriesView.vue'
+import StoryDetailView from '../components/StoryDetailView.vue'
 
 /**
  * Titles shown by PlaceholderView for features that are not implemented yet.
@@ -131,6 +132,12 @@ const routes: RouteRecordRaw[] = [
   },
   { path: '/universes', name: 'universes', component: UniversesView },
   { path: '/story', name: 'story', component: StoriesView },
+  {
+    path: '/story/:id',
+    name: 'story-detail',
+    component: StoryDetailView,
+    props: true,
+  },
   { path: '/reports', name: 'reports', component: ReportsView },
   { path: '/plots', name: 'plots', component: PlotsView },
   {

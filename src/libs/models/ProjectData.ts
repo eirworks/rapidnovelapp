@@ -31,11 +31,12 @@ export interface ProjectDatabaseData {
 }
 
 /**
- * The persisted shape of a project's writing side (`Content`). Stories live
- * here; chapters and drafts will be added alongside them.
+ * The persisted shape of a project's writing side (`Content`). Stories and
+ * their chapters live here; drafts will be added alongside them.
  */
 export interface ProjectContentData {
   stories?: StoryData[]
+  chapters?: ChapterData[]
 }
 
 export interface CharacterData {
@@ -161,6 +162,19 @@ export interface StoryData {
   summary?: string
   /** How the story is structured: a single book or chapter-based. */
   format?: string
+}
+
+export interface ChapterData {
+  id: string
+  /** Sort order of the chapter within its story. */
+  number?: number
+  storyId: string
+  title: string
+  content?: string
+  note?: string | null
+  warning?: string | null
+  /** ISO date string, or null while the chapter is a draft. */
+  publishedAt?: string | null
 }
 
 /** A lightweight project entry shown in the Load Project list. */

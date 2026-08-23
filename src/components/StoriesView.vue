@@ -8,9 +8,10 @@ import Breadcrumb from './ui/Breadcrumb.vue'
 import { useProjectStore } from '../store/projects'
 import { Story } from '../libs/models/Story'
 import type { StoryFormat } from '../libs/models/Story'
+import { formatLabel } from '../libs/storyFormat'
 import VueIcon from '@kalimahapps/vue-icons/VueIcon'
 
-defineEmits<{ back: []; navigate: [view: string, params?: Record<string, string>] }>()
+const emit = defineEmits<{ back: []; navigate: [view: string, params?: Record<string, string>] }>()
 
 const projectStore = useProjectStore()
 const { project } = storeToRefs(projectStore)
@@ -22,11 +23,6 @@ const stories = computed<Story[]>(
 /** 1-2 character initial derived from the story title (used in the card box). */
 function initials(story: Story): string {
   return story.title.trim().slice(0, 2).toUpperCase()
-}
-
-/** Human-readable format label shown on the card badge. */
-function formatLabel(format: StoryFormat): string {
-  return format === 'book' ? 'Book' : 'Chapters'
 }
 
 // --- Create / edit modal state ---
@@ -69,6 +65,11 @@ function save() {
 
   modalOpen.value = false
 }
+
+/** Opens the read-only detail page for the given story. */
+function openStory(story: Story) {
+  emit('navigate', 'story-detail', { id: story.id })
+}
 </script>
 
 <template>
@@ -97,9 +98,9 @@ function save() {
           class="flex cursor-pointer items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:border-indigo-300 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-indigo-600"
           role="button"
           tabindex="0"
-          @click="openEdit(story)"
-          @keydown.enter="openEdit(story)"
-          @keydown.space.prevent="openEdit(story)"
+          @click="openStory(story)"
+          @keydown.enter="openStory(story)"
+          @keydown.space.prevent="openStory(story)"
         >
           <!-- Gradient box with the story initials -->
           <div
