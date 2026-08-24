@@ -18,6 +18,7 @@ const projectStore = useProjectStore()
 const { project } = storeToRefs(projectStore)
 
 const stories = computed<Story[]>(() => project.value?.content.stories ?? [])
+const hasStories = computed(() => stories.value.length > 0)
 
 const drafts = ref<DraftSummary[]>([])
 const loading = ref(true)
@@ -81,7 +82,7 @@ onMounted(loadDrafts)
           ]"
         />
 
-        <AppButton variant="primary" size="sm" @click="$emit('navigate', 'draft-new')">
+        <AppButton variant="primary" size="sm" @click="$emit('navigate', 'draft-new')" :disabled="!hasStories" :title="!hasStories ? 'You need to create a story first' : undefined">
           New Draft
         </AppButton>
       </div>
