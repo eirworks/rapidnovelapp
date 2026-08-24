@@ -6,6 +6,7 @@ import { useProjectStore } from '../store/projects'
 import type { Story, StoryFormat } from '../libs/models/Story'
 import type { Chapter } from '../libs/models/Chapter'
 import { formatLabel } from '../libs/storyFormat'
+import VueIcon from '@kalimahapps/vue-icons/VueIcon'
 
 /**
  * Read-only detail view for a single story: shows the story's information and
@@ -98,7 +99,13 @@ function goBack() {
             <li
               v-for="chapter in chapters"
               :key="chapter.id"
-              class="rounded-lg px-3 py-2 transition hover:bg-slate-100 dark:hover:bg-slate-700"
+              class="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 transition hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 dark:hover:bg-slate-700"
+              role="button"
+              tabindex="0"
+              :title="`View chapter ${chapter.number}`"
+              @click="$emit('navigate', 'chapter-detail', { id: chapter.id })"
+              @keydown.enter="$emit('navigate', 'chapter-detail', { id: chapter.id })"
+              @keydown.space.prevent="$emit('navigate', 'chapter-detail', { id: chapter.id })"
             >
               <div class="flex items-center gap-2">
                 <!-- Chapter number, used for ordering -->
@@ -118,6 +125,10 @@ function goBack() {
                 >
                   Published
                 </span>
+                <VueIcon
+                  name="bs:chevron-right"
+                  class="shrink-0 text-slate-300 dark:text-slate-600"
+                />
               </div>
               <p
                 v-if="chapter.warning"

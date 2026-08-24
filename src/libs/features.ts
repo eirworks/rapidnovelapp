@@ -27,7 +27,7 @@ export const menus: MenuGroup[] = [
     items: [
       { label: 'Draft', view: 'draft', icon: 'bs:pencil' },
       { label: 'Story', view: 'story', icon: 'bs:book' },
-      { label: 'Chapters', view: 'chapters', icon: 'bs:list-ul' },
+      { label: 'Chapters', view: 'chapters', icon: 'bs:book-half' },
     ],
   },
   {

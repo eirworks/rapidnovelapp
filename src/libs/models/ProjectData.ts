@@ -186,7 +186,8 @@ export interface ChapterData {
   id: string
   /** Sort order of the chapter within its story. */
   number?: number
-  storyId: string
+  /** Id of the owning story, or null for orphaned chapters. */
+  storyId: string | null
   title: string
   content?: string
   note?: string | null

@@ -9,8 +9,11 @@ export class Chapter {
     /** Sort order of the chapter within its story. */
     number: number = 0
 
-    /** The id of the story this chapter belongs to. */
-    storyId: string
+    /**
+     * The id of the story this chapter belongs to, or null when the chapter
+     * is orphaned (it doesn't belong to any story).
+     */
+    storyId: string | null
 
     title: string
 
@@ -26,7 +29,7 @@ export class Chapter {
     /** ISO date string of when the chapter was published, or null while it is a draft. */
     publishedAt: string | null = null
 
-    constructor(storyId: string, title: string) {
+    constructor(storyId: string | null, title: string) {
         this.id = crypto.randomUUID()
         this.storyId = storyId
         this.title = title
