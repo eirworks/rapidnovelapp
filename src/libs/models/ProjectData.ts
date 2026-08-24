@@ -11,8 +11,7 @@ export interface ProjectData {
   author: string | null
   database?: ProjectDatabaseData
   content?: ProjectContentData
-  contents?: string[]
-  manager?: string[]
+  management?: ProjectManagementData
 }
 
 export interface ProjectDatabaseData {
@@ -21,6 +20,10 @@ export interface ProjectDatabaseData {
   items?: ItemData[]
   skills?: SkillData[]
   groups?: GroupData[]
+  /**
+   * @deprecated Tasks moved to `Management` (`ProjectData.management`). Still
+   * read as a fallback when loading a save written before the move.
+   */
   tasks?: TaskData[]
   taskGroups?: TaskGroupData[]
   plots?: PlotData[]
@@ -37,6 +40,14 @@ export interface ProjectDatabaseData {
 export interface ProjectContentData {
   stories?: StoryData[]
   chapters?: ChapterData[]
+}
+
+/**
+ * The persisted shape of a project's management side (`Management`). Tasks
+ * live here; task groups and other planning structures will be added.
+ */
+export interface ProjectManagementData {
+  tasks?: TaskData[]
 }
 
 export interface CharacterData {

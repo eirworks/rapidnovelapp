@@ -6,8 +6,8 @@ import Breadcrumb from './ui/Breadcrumb.vue'
 import TaskModal, { type TaskFormPayload } from './TaskModal.vue'
 import TaskGroupsModal from './TaskGroupsModal.vue'
 import type { TaskGroupFormPayload } from './TaskGroupModal.vue'
-import { Task, type TaskStatus } from '../libs/models/Task'
-import type { Task as TaskModel } from '../libs/models/Task'
+import { Task, type TaskStatus } from '../libs/models/management/Task'
+import type { Task as TaskModel } from '../libs/models/management/Task'
 import type { TaskGroup } from '../libs/models/TaskGroup'
 import { useProjectStore } from '../store/projects'
 import VueIcon from '@kalimahapps/vue-icons/VueIcon'
@@ -27,7 +27,7 @@ const groupsModal = ref(false)
 const confirmDeleteId = ref<string | null>(null)
 
 const tasks = computed<TaskModel[]>(
-  () => project.value?.database.tasks ?? [],
+  () => project.value?.management.tasks ?? [],
 )
 
 const groups = computed<TaskGroup[]>(

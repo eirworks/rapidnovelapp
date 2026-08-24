@@ -4,7 +4,7 @@ import { Character } from "../libs/models/Character";
 import { Place } from "../libs/models/Place";
 import { Item } from "../libs/models/Item";
 import { Skill } from "../libs/models/Skill";
-import { Task } from "../libs/models/Task";
+import { Task } from "../libs/models/management/Task";
 import { TaskGroup } from "../libs/models/TaskGroup";
 import { Group } from "../libs/models/Group";
 import { Timeline } from "../libs/models/Timeline";
@@ -46,7 +46,6 @@ export const useProjectStore = defineStore('projects',() => {
         loaded.database.places = (data.database?.places ?? []).map(toPlace)
         loaded.database.items = (data.database?.items ?? []).map(toItem)
         loaded.database.skills = (data.database?.skills ?? []).map(toSkill)
-        loaded.database.tasks = (data.database?.tasks ?? []).map(toTask)
         loaded.database.taskGroups = (data.database?.taskGroups ?? []).map(toTaskGroup)
         loaded.database.groups = (data.database?.groups ?? []).map(toGroup)
         loaded.database.plots = (data.database?.plots ?? []).map(toPlot)
@@ -56,8 +55,9 @@ export const useProjectStore = defineStore('projects',() => {
         loaded.database.events = (data.database?.events ?? []).map(toEvent)
         loaded.content.stories = (data.content?.stories ?? []).map(toStory)
         loaded.content.chapters = (data.content?.chapters ?? []).map(toChapter)
-        loaded.contents = data.contents ?? []
-        loaded.manager = data.manager ?? []
+        // Tasks live under Management; `data.database?.tasks` is a fallback so
+        // saves written before the move still load their tasks.
+        loaded.management.tasks = (data.management?.tasks ?? data.database?.tasks ?? []).map(toTask)
         project.value = loaded
     }
 
@@ -221,12 +221,13 @@ export const useProjectStore = defineStore('projects',() => {
                 project.value.database.places.length +
                 project.value.database.groups.length,
             contents: project.value.content.stories.length,
-            tasks: project.value.database.tasks.length,
+            tasks: project.value.management.tasks.length,
         }
     })
 
     /**
-     * Per-collection counts of every database list, used by the Reports page.
+     * Per-collection counts of every database list (plus tasks, which live
+     * under Management), used by the Reports page.
      */
     const databaseStats = computed(() => {
         if (!project.value) return null
@@ -237,7 +238,7 @@ export const useProjectStore = defineStore('projects',() => {
             items: db.items.length,
             skills: db.skills.length,
             groups: db.groups.length,
-            tasks: db.tasks.length,
+            tasks: project.value.management.tasks.length,
             taskGroups: db.taskGroups.length,
             plots: db.plots.length,
             scenes: db.scenes.length,

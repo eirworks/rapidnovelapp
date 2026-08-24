@@ -3,8 +3,8 @@ import { computed, ref } from 'vue'
 import AppButton from './ui/AppButton.vue'
 import AppModal from './ui/AppModal.vue'
 import AppTextField from './ui/AppTextField.vue'
-import { TASK_STATUSES, type TaskStatus } from '../libs/models/Task'
-import type { Task } from '../libs/models/Task'
+import { TASK_STATUSES, type TaskStatus } from '../libs/models/management/Task'
+import type { Task } from '../libs/models/management/Task'
 import type { TaskGroup } from '../libs/models/TaskGroup'
 
 export interface TaskFormPayload {

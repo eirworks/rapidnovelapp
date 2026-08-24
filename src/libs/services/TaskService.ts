@@ -1,29 +1,29 @@
-import type { Task } from "../models/Task";
-import type { Database } from "../models/Database";
+import type { Task } from "../models/management/Task";
+import type { Management } from "../models/Management";
 
 export class TaskService {
-    constructor(private database: Database) {}
+    constructor(private management: Management) {}
 
     getAll() {
-        return [...this.database.tasks]
+        return [...this.management.tasks]
     }
 
     getById(id: string) {
-        return this.database.tasks.find((t) => t.id === id)
+        return this.management.tasks.find((t) => t.id === id)
     }
 
     add(task: Task) {
-        this.database.tasks.push(task);
+        this.management.tasks.push(task);
     }
 
     edit(id: string, task: Task) {
-        const index = this.database.tasks.findIndex((t) => t.id === id);
+        const index = this.management.tasks.findIndex((t) => t.id === id);
         if (index !== -1) {
-            this.database.tasks[index] = { ...task, id };
+            this.management.tasks[index] = { ...task, id };
         }
     }
 
     delete(id: string) {
-        this.database.tasks = this.database.tasks.filter((t) => t.id !== id);
+        this.management.tasks = this.management.tasks.filter((t) => t.id !== id);
     }
 }

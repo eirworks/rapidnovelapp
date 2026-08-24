@@ -1,5 +1,6 @@
 import { Database } from "./Database"
 import { Content } from "./Content"
+import { Management } from "./Management"
 import { CharacterService } from "../services/CharacterService"
 import { PlaceService } from "../services/PlaceService"
 import { ItemService } from "../services/ItemService"
@@ -24,13 +25,14 @@ export class Project {
     // Database, Content, and Management
     database: Database = new Database()
     content: Content = new Content()
+    management: Management = new Management()
 
     // Services
     characterService: CharacterService = new CharacterService(this.database)
     placeService: PlaceService = new PlaceService(this.database)
     itemService: ItemService = new ItemService(this.database)
     skillService: SkillService = new SkillService(this.database)
-    taskService: TaskService = new TaskService(this.database)
+    taskService: TaskService = new TaskService(this.management)
     taskGroupService: TaskGroupService = new TaskGroupService(this.database)
     groupService: GroupService = new GroupService(this.database)
     timelineService: TimelineService = new TimelineService(this.database)
@@ -40,9 +42,6 @@ export class Project {
     universeService: UniverseService = new UniverseService(this.database)
     storyService: StoryService = new StoryService(this.content)
     chapterService: ChapterService = new ChapterService(this.content)
-
-    // TODO update these types
-    manager: string[] = []
 
     constructor(id: string, name: string, description: string, author: string) {
         this.id = id

@@ -32,7 +32,7 @@ async function saveProject() {
     return
   }
   // Snapshot the project's plain data (services are dropped — their content
-  // lives in `database`).
+  // lives in `database`, `content`, and `management`).
   const snapshot = {
     id: project.id,
     name: project.name,
@@ -40,8 +40,7 @@ async function saveProject() {
     author: project.author,
     database: project.database,
     content: project.content,
-    contents: project.contents,
-    manager: project.manager,
+    management: project.management,
   }
   // Serialize to a JSON string before crossing the IPC boundary to avoid
   // structured-clone errors ("An object could not be cloned") for the project
