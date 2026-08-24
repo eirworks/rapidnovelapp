@@ -48,6 +48,7 @@ export interface ProjectContentData {
  */
 export interface ProjectManagementData {
   tasks?: TaskData[]
+  notes?: NoteData[]
 }
 
 export interface CharacterData {
@@ -112,6 +113,12 @@ export interface TaskData {
   description?: string | null
   dueDate?: string | null
   groupId?: string | null
+}
+
+export interface NoteData {
+  id: string
+  title: string
+  content?: string
 }
 
 export interface TaskGroupData {

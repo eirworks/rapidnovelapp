@@ -5,13 +5,14 @@ import { Place } from "../libs/models/Place";
 import { Item } from "../libs/models/Item";
 import { Skill } from "../libs/models/Skill";
 import { Task } from "../libs/models/management/Task";
+import { Note } from "../libs/models/management/Note";
 import { TaskGroup } from "../libs/models/TaskGroup";
 import { Group } from "../libs/models/Group";
 import { Timeline } from "../libs/models/Timeline";
 import { Event } from "../libs/models/Event";
 import { Plot } from "../libs/models/Plot";
 import { Scene } from "../libs/models/Scene";
-import type { CharacterData, ItemData, PlaceData, ProjectData, TaskData, TaskGroupData, GroupData, TimelineData, EventData, PlotData, SceneData, UniverseData, SkillData, StoryData, ChapterData } from "../libs/models/ProjectData";
+import type { CharacterData, ItemData, PlaceData, ProjectData, TaskData, TaskGroupData, GroupData, TimelineData, EventData, PlotData, SceneData, UniverseData, SkillData, StoryData, ChapterData, NoteData } from "../libs/models/ProjectData";
 import { Universe } from "../libs/models/Universe";
 import { Story } from "../libs/models/Story";
 import { Chapter } from "../libs/models/Chapter";
@@ -58,6 +59,7 @@ export const useProjectStore = defineStore('projects',() => {
         // Tasks live under Management; `data.database?.tasks` is a fallback so
         // saves written before the move still load their tasks.
         loaded.management.tasks = (data.management?.tasks ?? data.database?.tasks ?? []).map(toTask)
+        loaded.management.notes = (data.management?.notes ?? []).map(toNote)
         project.value = loaded
     }
 
@@ -113,6 +115,13 @@ export const useProjectStore = defineStore('projects',() => {
         task.dueDate = data.dueDate ?? null
         task.groupId = data.groupId ?? null
         return task
+    }
+
+    /** Rebuilds a Note instance from its saved plain-data shape. */
+    function toNote(data: NoteData): Note {
+        const note = new Note(data.title, data.content ?? '')
+        note.id = data.id
+        return note
     }
 
     /** Rebuilds a TaskGroup instance from its saved plain-data shape. */

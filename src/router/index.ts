@@ -20,6 +20,8 @@ import GroupsView from '../components/GroupsView.vue'
 import GroupFormView from '../components/GroupFormView.vue'
 import GroupDetailView from '../components/GroupDetailView.vue'
 import TasksView from '../components/TasksView.vue'
+import NotesView from '../components/NotesView.vue'
+import NoteEditorView from '../components/NoteEditorView.vue'
 import TimelinesView from '../components/TimelinesView.vue'
 import TimelineView from '../components/TimelineView.vue'
 import ReportsView from '../components/ReportsView.vue'
@@ -123,6 +125,19 @@ const routes: RouteRecordRaw[] = [
     props: true,
   },
   { path: '/tasks', name: 'tasks', component: TasksView },
+  { path: '/notes', name: 'notes', component: NotesView },
+  {
+    path: '/notes/new',
+    name: 'note-new',
+    component: NoteEditorView,
+    props: { id: 'new' },
+  },
+  {
+    path: '/notes/:id',
+    name: 'note-edit',
+    component: NoteEditorView,
+    props: true,
+  },
   { path: '/timeline', name: 'timeline', component: TimelinesView },
   {
     path: '/timeline/:id',

@@ -1,4 +1,5 @@
 import type { Task } from "./management/Task"
+import type { Note } from "./management/Note"
 
 /**
  * The management side of a project — as opposed to `Database`, which holds the
@@ -8,4 +9,5 @@ import type { Task } from "./management/Task"
  */
 export class Management {
     tasks: Task[] = [];
+    notes: Note[] = [];
 }
