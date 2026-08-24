@@ -19,6 +19,14 @@ interface AppConfig {
   aiProviders: AiProvider[]
 }
 
+/** Lightweight draft entry returned by the Drafts list. */
+interface DraftSummary {
+  id: string
+  title: string
+  storyId: string | null
+  updatedAt: string
+}
+
 declare module '*.vue' {
   import type { DefineComponent } from 'vue'
   const component: DefineComponent<{}, {}, any>
@@ -69,5 +77,15 @@ interface Window {
     list(): Promise<import('./libs/models/ProjectData').ProjectSummary[]>
     /** Loads the full saved data of a project by id. */
     load(id: string): Promise<import('./libs/models/ProjectData').ProjectData>
+  }
+  draftApi: {
+    /** Lists every draft of a project from its `drafts/` directory. */
+    list(projectId: string): Promise<DraftSummary[]>
+    /** Loads a draft file; `content` is the raw DraftDocument JSON string. */
+    load(projectId: string, draftId: string): Promise<{ content: string }>
+    /** Writes a draft to `drafts/<draftId>.json` (creates the dir as needed). */
+    save(projectId: string, draftId: string, content: string): Promise<{ path: string }>
+    /** Deletes a draft file. */
+    delete(projectId: string, draftId: string): Promise<void>
   }
 }

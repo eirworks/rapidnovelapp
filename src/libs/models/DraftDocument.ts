@@ -2,20 +2,36 @@ import { DraftItem } from './DraftItem'
 import type { DraftItemData } from './DraftItem'
 
 /**
- * Serializable shape of the whole Quick Write document, as persisted to disk.
+ * Serializable shape of the whole Quick Write / Draft document, as persisted
+ * to disk (Quick Write files and `drafts/<id>.json`).
  */
 export interface DraftDocumentData {
   /** Format version so future migrations can be handled. */
   version: 1
+  /** Stable identifier; also the file name (`<id>.json`) in the drafts dir. */
+  id?: string
+  /** Working title of the draft. */
+  title?: string
+  /** Id of the story this draft belongs to, or null when unassigned. */
+  storyId?: string | null
   items: DraftItemData[]
 }
 
 /**
- * The Quick Write document: an ordered array of editable draft items (like a
- * notebook). Owns the collection-level operations: adding, removing, and
- * reordering items, plus serialization to/from the saved file.
+ * The Quick Write / Draft document: an ordered array of editable draft items
+ * (like a notebook). Owns the collection-level operations: adding, removing,
+ * and reordering items, plus serialization to/from the saved file.
  */
 export class DraftDocument {
+  /** Stable identifier, also used as the saved file name (`<id>.json`). */
+  id: string = crypto.randomUUID()
+
+  /** Working title of the draft. */
+  title: string = ''
+
+  /** Id of the story this draft belongs to, or null when unassigned. */
+  storyId: string | null = null
+
   items: DraftItem[] = []
 
   /**
@@ -64,6 +80,9 @@ export class DraftDocument {
   toJSON(): DraftDocumentData {
     return {
       version: 1,
+      id: this.id,
+      title: this.title,
+      storyId: this.storyId,
       items: this.items.map((item) => item.toJSON()),
     }
   }
@@ -78,6 +97,11 @@ export class DraftDocument {
       string,
       unknown
     >
+    if (typeof raw.id === 'string' && raw.id.length > 0) doc.id = raw.id
+    if (typeof raw.title === 'string') doc.title = raw.title
+    if (typeof raw.storyId === 'string' && raw.storyId.length > 0) {
+      doc.storyId = raw.storyId
+    }
     if (Array.isArray(raw.items)) {
       doc.items = raw.items
         .filter((item): item is DraftItemData => !!item && typeof item === 'object')

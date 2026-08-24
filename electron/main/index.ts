@@ -5,6 +5,7 @@ import { registerAiProviderIpc } from './ipc/aiProviders'
 import { registerAiIpc } from './ipc/ai'
 import { registerQuickWriteIpc } from './ipc/quickWrite'
 import { registerProjectIpc } from './ipc/project'
+import { registerDraftIpc } from './ipc/draft'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import os from 'node:os'
@@ -171,6 +172,7 @@ app.whenReady().then(() => {
   registerAiIpc()
   registerQuickWriteIpc()
   registerProjectIpc()
+  registerDraftIpc()
   createApplicationMenu()
   createWindow()
 })

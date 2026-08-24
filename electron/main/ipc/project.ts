@@ -1,14 +1,13 @@
-import { app, ipcMain } from 'electron'
+import { ipcMain } from 'electron'
 import fs from 'node:fs'
 import path from 'node:path'
 
+import { getProjectsDir } from '../../config'
+
 /**
- * Root directory that holds all saved projects: `~/.rapidnovel/project`.
+ * Root directory that holds all saved projects: `~/.rapidnovel/projects`.
  * Each project lives in its own subfolder named after its id.
  */
-function projectsRoot(): string {
-  return path.join(app.getPath('home'), '.rapidnovel', 'project')
-}
 
 /** Lightweight project entry returned by the Load Project list. */
 interface ProjectSummary {
@@ -21,7 +20,7 @@ interface ProjectSummary {
 
 /** Path to a project's JSON file, or null when the file does not exist. */
 function projectJsonPath(id: string): string | null {
-  const filePath = path.join(projectsRoot(), id, 'project.json')
+  const filePath = path.join(getProjectsDir(), id, 'project.json')
   return fs.existsSync(filePath) ? filePath : null
 }
 
@@ -46,7 +45,7 @@ export function registerProjectIpc(): void {
       if (typeof id !== 'string' || id.length === 0) {
         throw new Error('Invalid project: missing id')
       }
-      const projectDir = path.join(projectsRoot(), id)
+      const projectDir = path.join(getProjectsDir(), id)
       fs.mkdirSync(projectDir, { recursive: true })
       const filePath = path.join(projectDir, 'project.json')
       fs.writeFileSync(filePath, JSON.stringify(project, null, 2), 'utf-8')
@@ -54,9 +53,9 @@ export function registerProjectIpc(): void {
     },
   )
 
-  // Lists every saved project by reading each `project/<id>/project.json`.
+  // Lists every saved project by reading each `projects/<id>/project.json`.
   ipcMain.handle('project:list', async (): Promise<ProjectSummary[]> => {
-    const root = projectsRoot()
+    const root = getProjectsDir()
     if (!fs.existsSync(root)) return []
     const summaries: ProjectSummary[] = []
     for (const entry of fs.readdirSync(root, { withFileTypes: true })) {

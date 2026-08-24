@@ -36,6 +36,8 @@ import StoriesView from '../components/StoriesView.vue'
 import StoryDetailView from '../components/StoryDetailView.vue'
 import ChaptersView from '../components/ChaptersView.vue'
 import ChapterView from '../components/ChapterView.vue'
+import DraftsView from '../components/DraftsView.vue'
+import DraftFormView from '../components/DraftFormView.vue'
 
 /**
  * Titles shown by PlaceholderView for features that are not implemented yet.
@@ -44,7 +46,6 @@ import ChapterView from '../components/ChapterView.vue'
  */
 const placeholderTitles: Record<string, string> = {
   'save-project': 'Save Project',
-  draft: 'Draft',
   help: 'Help',
 }
 
@@ -161,6 +162,20 @@ const routes: RouteRecordRaw[] = [
     component: ChapterView,
     props: true,
   },
+  // Drafts: the menu action id stays 'draft' while the routes are plural.
+  { path: '/drafts', name: 'draft', component: DraftsView },
+  {
+    path: '/drafts/new',
+    name: 'draft-new',
+    component: DraftFormView,
+    props: { id: 'new' },
+  },
+  {
+    path: '/drafts/:id',
+    name: 'draft-edit',
+    component: DraftFormView,
+    props: true,
+  },
   { path: '/reports', name: 'reports', component: ReportsView },
   { path: '/plots', name: 'plots', component: PlotsView },
   {
@@ -209,9 +224,12 @@ const routes: RouteRecordRaw[] = [
  * '/characters/:id'), which covers the form and detail sub-routes of each
  * feature as well as the top-level list views.
  */
-const protectedViews = new Set(
-  menus.flatMap((group) => group.items.map((item) => item.view)),
-)
+const protectedViews = new Set([
+  ...menus.flatMap((group) => group.items.map((item) => item.view)),
+  // The Draft feature's route path is plural ('/drafts') while its menu
+  // action id is 'draft', so the derived set misses it.
+  'drafts',
+])
 
 export const router = createRouter({
   // Hash history works both from the Vite dev server and from the file:// URL

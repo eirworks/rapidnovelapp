@@ -10,6 +10,14 @@ interface ProjectSummary {
   path: string
 }
 
+/** Lightweight draft entry returned by the Drafts list. */
+interface DraftSummary {
+  id: string
+  title: string
+  storyId: string | null
+  updatedAt: string
+}
+
 // --------- Expose config API to the Renderer process ---------
 contextBridge.exposeInMainWorld('configApi', {
   get: (): Promise<AppConfig> => ipcRenderer.invoke('config:get'),
@@ -41,6 +49,22 @@ contextBridge.exposeInMainWorld('quickWriteApi', {
     ipcRenderer.invoke('quickwrite:saveTxt', content),
   load: (): Promise<{ path: string; content: string } | null> =>
     ipcRenderer.invoke('quickwrite:load'),
+})
+
+// --------- Expose Draft file API to the Renderer process ---------
+contextBridge.exposeInMainWorld('draftApi', {
+  list: (projectId: string): Promise<DraftSummary[]> =>
+    ipcRenderer.invoke('draft:list', projectId),
+  load: (projectId: string, draftId: string): Promise<{ content: string }> =>
+    ipcRenderer.invoke('draft:load', projectId, draftId),
+  save: (
+    projectId: string,
+    draftId: string,
+    content: string,
+  ): Promise<{ path: string }> =>
+    ipcRenderer.invoke('draft:save', projectId, draftId, content),
+  delete: (projectId: string, draftId: string): Promise<void> =>
+    ipcRenderer.invoke('draft:delete', projectId, draftId),
 })
 
 // --------- Expose Project file API to the Renderer process ---------
