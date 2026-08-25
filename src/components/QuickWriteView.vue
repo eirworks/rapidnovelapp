@@ -2,13 +2,14 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import AppButton from './ui/AppButton.vue'
+import Breadcrumb from './ui/Breadcrumb.vue'
 import { AI_ACTIONS } from '../libs/models/AiAction'
 import type { AiAction } from '../libs/models/AiAction'
 import { DraftDocument } from '../libs/models/DraftDocument'
 import type { DraftItem } from '../libs/models/DraftItem'
 import { useQuickWriteStore } from '../store/quickWrite'
 
-defineEmits<{ back: []; navigate: [view: string] }>()
+const emit = defineEmits<{ back: []; navigate: [view: string] }>()
 
 // ---------------- Document state ----------------
 const quickWriteStore = useQuickWriteStore()
@@ -73,6 +74,10 @@ watch(providerId, (id) => {
 })
 
 // ---------------- File actions ----------------
+function goHome() {
+  emit('back')
+}
+
 function newDraft() {
   const hasContent = document.value.items.some((item) => item.data.trim())
   if (hasContent && !window.confirm('Discard the current draft and start a new one?')) {
@@ -219,9 +224,23 @@ function onDrop() {
   <main class="flex h-screen flex-col bg-slate-50 dark:bg-slate-950">
     <!-- Toolbar -->
     <header
-      class="flex shrink-0 items-center gap-2 border-b border-slate-200 bg-white px-4 py-2 dark:border-slate-700 dark:bg-slate-800"
+      class="flex shrink-0 flex-wrap items-center gap-2 border-b border-slate-200 bg-white px-4 py-2 dark:border-slate-700 dark:bg-slate-800"
     >
-      <AppButton variant="text" @click="$emit('back')">← Home</AppButton>
+      <Breadcrumb
+        :crumbs="[
+          { label: 'Home', onClick: goHome },
+          { label: 'Quick Write' },
+        ]"
+      />
+
+      <span class="flex-1"></span>
+
+      <span
+        class="truncate font-mono text-xs text-slate-500 dark:text-slate-400"
+        :title="currentPath ?? undefined"
+      >
+        {{ currentPath ? currentPath : 'Unsaved draft' }}
+      </span>
 
       <AppButton variant="bordered" :disabled="fileBusy" @click="newDraft">
         New
@@ -237,13 +256,9 @@ function onDrop() {
       </AppButton>
 
       <span
-        class="ml-2 truncate font-mono text-xs text-slate-500 dark:text-slate-400"
-        :title="currentPath ?? undefined"
+        v-if="fileError"
+        class="w-full text-right text-sm font-medium text-red-600 dark:text-red-400"
       >
-        {{ currentPath ? currentPath : 'Unsaved draft' }}
-      </span>
-
-      <span v-if="fileError" class="ml-auto text-sm font-medium text-red-600 dark:text-red-400">
         {{ fileError }}
       </span>
     </header>
@@ -259,34 +274,35 @@ function onDrop() {
             @dragover.prevent="onDragOver(item)"
             @drop.prevent="onDrop"
           >
-            <!-- Drag handle on top -->
-            <div class="flex items-center px-2 pb-1">
-              <span
-                draggable="true"
-                title="Drag to reorder"
-                class="cursor-grab select-none text-base leading-none text-slate-400 hover:text-slate-600 active:cursor-grabbing dark:text-slate-500 dark:hover:text-slate-300"
-                @dragstart="onDragStart(item)"
-                @dragend="onDragEnd"
-              >
-                ⋮⋮
-              </span>
-              <span
-                v-if="runningItemId === item.id"
-                class="ml-2 text-xs font-medium text-indigo-600 dark:text-indigo-400"
-              >
-                Running AI action…
-              </span>
-            </div>
+            <!-- Drag handle and textarea side by side -->
+            <div class="flex items-start gap-2">
+              <div class="flex items-center">
+                <span
+                  draggable="true"
+                  title="Drag to reorder"
+                  class="cursor-grab select-none text-base leading-none text-slate-400 hover:text-slate-600 active:cursor-grabbing dark:text-slate-500 dark:hover:text-slate-300"
+                  @dragstart="onDragStart(item)"
+                  @dragend="onDragEnd"
+                >
+                  ⋮⋮
+                </span>
+                <span
+                  v-if="runningItemId === item.id"
+                  class="ml-2 text-xs font-medium text-indigo-600 dark:text-indigo-400"
+                >
+                  Running AI action…
+                </span>
+              </div>
 
-            <!-- Item content: blends with background, highlighted only when active -->
-            <textarea
-              v-model="item.data"
-              v-auto-grow
-              spellcheck="true"
-              :disabled="!!runningItemId"
-              placeholder="Start writing this item…"
-              class="w-full rounded-xl bg-transparent px-4 py-3 text-base leading-relaxed text-slate-900 placeholder:text-slate-400 focus:bg-slate-100 focus:outline-none disabled:cursor-not-allowed dark:text-slate-50 dark:placeholder:text-slate-500 dark:focus:bg-slate-800/60"
-            ></textarea>
+              <textarea
+                v-model="item.data"
+                v-auto-grow
+                spellcheck="true"
+                :disabled="!!runningItemId"
+                placeholder="Start writing this item…"
+                class="flex-1 rounded-xl bg-transparent px-4 py-3 text-base leading-relaxed text-slate-900 placeholder:text-slate-400 focus:bg-slate-100 focus:outline-none disabled:cursor-not-allowed dark:text-slate-50 dark:placeholder:text-slate-500 dark:focus:bg-slate-800/60"
+              ></textarea>
+            </div>
 
             <!-- Bottom toolbar: AI actions left, add item far right -->
             <div class="flex flex-wrap items-center gap-1 px-1 py-1.5">
