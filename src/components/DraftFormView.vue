@@ -389,34 +389,35 @@ function onDrop() {
             @dragover.prevent="onDragOver(item)"
             @drop.prevent="onDrop"
           >
-            <!-- Drag handle on top -->
-            <div class="flex items-center px-2 pb-1">
-              <span
-                draggable="true"
-                title="Drag to reorder"
-                class="cursor-grab select-none text-base leading-none text-slate-400 hover:text-slate-600 active:cursor-grabbing dark:text-slate-500 dark:hover:text-slate-300"
-                @dragstart="onDragStart(item)"
-                @dragend="onDragEnd"
-              >
-                ⋮⋮
-              </span>
-              <span
-                v-if="runningItemId === item.id"
-                class="ml-2 text-xs font-medium text-indigo-600 dark:text-indigo-400"
-              >
-                Running AI action…
-              </span>
-            </div>
+            <!-- Drag handle and textarea side by side -->
+            <div class="flex items-start gap-2">
+              <div class="flex items-center">
+                <span
+                  draggable="true"
+                  title="Drag to reorder"
+                  class="cursor-grab select-none text-base leading-none text-slate-400 hover:text-slate-600 active:cursor-grabbing dark:text-slate-500 dark:hover:text-slate-300"
+                  @dragstart="onDragStart(item)"
+                  @dragend="onDragEnd"
+                >
+                  ⋮⋮
+                </span>
+                <span
+                  v-if="runningItemId === item.id"
+                  class="ml-2 text-xs font-medium text-indigo-600 dark:text-indigo-400"
+                >
+                  Running AI action…
+                </span>
+              </div>
 
-            <!-- Item content: blends with background, highlighted only when active -->
-            <textarea
-              v-model="item.data"
-              v-auto-grow
-              spellcheck="true"
-              :disabled="!!runningItemId"
-              placeholder="Start writing this item…"
-              class="w-full rounded-xl bg-transparent px-4 py-3 text-base leading-relaxed text-slate-900 placeholder:text-slate-400 focus:bg-slate-100 focus:outline-none disabled:cursor-not-allowed dark:text-slate-50 dark:placeholder:text-slate-500 dark:focus:bg-slate-800/60"
-            ></textarea>
+              <textarea
+                v-model="item.data"
+                v-auto-grow
+                spellcheck="true"
+                :disabled="!!runningItemId"
+                placeholder="Start writing this item…"
+                class="flex-1 rounded-xl bg-transparent px-4 py-3 text-base leading-relaxed text-slate-900 placeholder:text-slate-400 focus:bg-slate-100 focus:outline-none disabled:cursor-not-allowed dark:text-slate-50 dark:placeholder:text-slate-500 dark:focus:bg-slate-800/60"
+              ></textarea>
+            </div>
 
             <!-- Bottom toolbar: AI actions left, add item far right -->
             <div class="flex flex-wrap items-center gap-1 px-1 py-1.5">
