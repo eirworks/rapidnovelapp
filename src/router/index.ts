@@ -38,6 +38,7 @@ import ChaptersView from '../components/ChaptersView.vue'
 import ChapterView from '../components/ChapterView.vue'
 import DraftsView from '../components/DraftsView.vue'
 import DraftFormView from '../components/DraftFormView.vue'
+import SearchView from '../components/SearchView.vue'
 
 /**
  * Titles shown by PlaceholderView for features that are not implemented yet.
@@ -51,6 +52,7 @@ const placeholderTitles: Record<string, string> = {
 
 const routes: RouteRecordRaw[] = [
   { path: '/', name: 'home', component: HomeView },
+  { path: '/search', name: 'search', component: SearchView },
   { path: '/settings', name: 'settings', component: SettingsView },
   { path: '/quick-write', name: 'quick-write', component: QuickWriteView },
   { path: '/new-project', name: 'new-project', component: NewProjectView },

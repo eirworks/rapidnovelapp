@@ -1,23 +1,37 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import AppButton from './ui/AppButton.vue'
 import AppModal from './ui/AppModal.vue'
+import AppTextField from './ui/AppTextField.vue'
 import ProjectForm from './ProjectForm.vue'
 import type { ProjectFormPayload } from './ProjectForm.vue'
 import ProjectStats from './ProjectStats.vue'
 import { useProjectStore } from '../store/projects'
+import { useSearchStore } from '../store/search'
 import { menus } from '../libs/features'
 import VueIcon from '@kalimahapps/vue-icons/VueIcon';
 
+const router = useRouter()
 const emit = defineEmits<{ navigate: [view: string] }>()
 
 const projectStore = useProjectStore()
+const searchStore = useSearchStore()
 
 const editOpen = ref(false)
+
+/** Local state for the faux search bar on the home view. */
+const searchQuery = ref('')
 
 function saveEdit(payload: ProjectFormPayload) {
   projectStore.editProject(payload.name, payload.description, payload.author)
   editOpen.value = false
+}
+
+/** Navigate to SearchView, pre-filling the query if one was passed. */
+function openSearch(initialQuery = '') {
+  searchStore.setInitialQuery(initialQuery)
+  void router.push({ name: 'search', query: initialQuery ? { q: initialQuery } : {} })
 }
 </script>
 
@@ -113,9 +127,21 @@ function saveEdit(payload: ProjectFormPayload) {
 
       <ProjectStats class="mt-8" />
 
-      <div
-        class="mt-10 flex w-full max-w-2xl flex-col gap-10 text-left"
-      >
+      <div class="mt-10 flex w-full max-w-2xl flex-col gap-10 text-left">
+        <!-- Big faux search bar -->
+        <div class="mx-auto w-full max-w-xl sm:max-w-2xl">
+          <AppTextField
+            v-model="searchQuery"
+            placeholder="Search characters, places, stories, tasks, notes…"
+            @keyup.enter="openSearch(searchQuery)"
+          >
+            <template #trailing>
+              <span class="flex h-full cursor-pointer items-center px-2 text-slate-400 transition hover:text-indigo-500 dark:hover:text-indigo-400" @click="openSearch(searchQuery)">
+                <VueIcon name="bs:search" />
+              </span>
+            </template>
+          </AppTextField>
+        </div>
         <section v-for="menu in menus" :key="menu.label">
           <h2
             class="text-sm font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400"
