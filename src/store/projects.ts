@@ -10,9 +10,9 @@ import { TaskGroup } from "../libs/models/TaskGroup";
 import { Group } from "../libs/models/Group";
 import { Timeline } from "../libs/models/Timeline";
 import { Event } from "../libs/models/Event";
-import { Plot } from "../libs/models/Plot";
+import { Plot, type ActorRole } from "../libs/models/Plot";
 import { Scene } from "../libs/models/Scene";
-import type { CharacterData, ItemData, PlaceData, ProjectData, TaskData, TaskGroupData, GroupData, TimelineData, EventData, PlotData, SceneData, UniverseData, SkillData, StoryData, ChapterData, NoteData } from "../libs/models/ProjectData";
+import type { CharacterData, ItemData, PlaceData, ProjectData, TaskData, TaskGroupData, GroupData, TimelineData, EventData, PlotData, PlotActorData, SceneData, UniverseData, SkillData, StoryData, ChapterData, NoteData } from "../libs/models/ProjectData";
 import { Universe } from "../libs/models/Universe";
 import { Story } from "../libs/models/Story";
 import { Chapter } from "../libs/models/Chapter";
@@ -142,13 +142,24 @@ export const useProjectStore = defineStore('projects',() => {
         return event
     }
 
-    /** Rebuilds a Plot instance from its saved plain-data shape. */
+    /** Rebuilds a Plot instance from its saved plain-data shape.
+     * Handles backward-compatible `actorIds` (string[]) by converting
+     * each bare id into a `PlotActor` with role 'main'. */
     function toPlot(data: PlotData): Plot {
         const plot = new Plot(data.name)
         plot.id = data.id
         plot.description = data.description ?? ''
         plot.placeId = data.placeId ?? null
-        plot.actorIds = data.actorIds ?? []
+
+        // Prefer modern `actors` array; fall back to legacy `actorIds`.
+        if (data.actors) {
+            plot.actors = data.actors as PlotActorData[]
+        } else if (data.actorIds) {
+            plot.actors = data.actorIds.map(
+                (id) => ({ id, role: 'main' as ActorRole }),
+            )
+        }
+
         plot.number = data.number ?? 0
         plot.goal = data.goal ?? ''
         plot.universeId = data.universeId ?? ''

@@ -78,6 +78,24 @@ const STATUS_COLORS: Record<string, string> = {
   discard:   'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300',
 }
 
+/** Role badge styling for actors in the plot detail view. */
+const STATUS_BADGE: Record<string, string> = {
+  main:        'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300',
+  protagonist: 'bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300',
+  antagonist:  'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300',
+  support:     'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
+  other:       'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400',
+}
+
+/** Left-border colour per actor role. */
+const ROLE_COLORS: Record<string, string> = {
+  main:        'border-l-indigo-500',
+  protagonist: 'border-l-violet-500',
+  antagonist:  'border-l-rose-500',
+  support:     'border-l-amber-500',
+  other:       'border-l-slate-400',
+}
+
 function statusBadge(plot: Plot) {
   return {
     label: STATUS_LABELS[plot.status] ?? plot.status,
@@ -322,20 +340,29 @@ watch(allPlots, (plots) => {
               </p>
             </section>
 
-            <!-- Actors (Characters) -->
-            <section v-if="selectedPlot.actorIds.length > 0">
+            <!-- Actors (Characters with Roles) -->
+            <section v-if="selectedPlot.actors.length > 0">
               <h2
                 class="text-lg font-semibold text-slate-800 dark:text-slate-100"
               >
                 Characters
               </h2>
-              <ul class="mt-2 space-y-1">
+              <ul class="mt-2 space-y-2">
                 <li
-                  v-for="actorId in selectedPlot.actorIds"
-                  :key="actorId"
-                  class="text-base text-slate-700 dark:text-slate-200"
+                  v-for="actor in selectedPlot.actors"
+                  :key="actor.id"
+                  class="flex items-center gap-3 rounded-md border-l-4 bg-slate-50 px-3 py-2 dark:bg-slate-900"
+                  :class="ROLE_COLORS[actor.role as string] ?? ROLE_COLORS.other"
                 >
-                  {{ characterName(actorId) }}
+                  <span class="text-base text-slate-700 dark:text-slate-200">
+                    {{ characterName(actor.id) }}
+                  </span>
+                  <span
+                    class="ml-auto shrink-0 rounded-full px-2 py-0.5 text-xs font-medium capitalize"
+                    :class="STATUS_BADGE[actor.role as string] ?? STATUS_BADGE.discard"
+                  >
+                    {{ actor.role }}
+                  </span>
                 </li>
               </ul>
             </section>

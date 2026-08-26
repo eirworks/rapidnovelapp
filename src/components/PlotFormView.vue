@@ -2,18 +2,50 @@
 import { computed, ref } from 'vue'
 import AppButton from './ui/AppButton.vue'
 import AppTextField from './ui/AppTextField.vue'
+import AppModal from './ui/AppModal.vue'
 import Breadcrumb from './ui/Breadcrumb.vue'
 import { useProjectStore } from '../store/projects'
-import { Plot } from '../libs/models/Plot'
+import { Plot, type ActorRole } from '../libs/models/Plot'
 import type { Place } from '../libs/models/Place'
 import type { Character } from '../libs/models/Character'
 import type { Universe } from '../libs/models/Universe'
 
+/** Preset role options shown in the add-actor modal. */
+const ROLE_OPTIONS: { value: ActorRole; label: string }[] = [
+    { value: 'main',          label: 'Main' },
+    { value: 'protagonist',   label: 'Protagonist' },
+    { value: 'antagonist',    label: 'Antagonist' },
+    { value: 'support',       label: 'Support' },
+    { value: 'other',         label: 'Other' },
+]
+
+const STATUS_LABELS: Record<string, string> = {
+    pending: 'Pending',
+    ongoing: 'Ongoing',
+    completed: 'Completed',
+    discard: 'Discarded',
+}
+
+const STATUS_BADGE: Record<string, string> = {
+    pending:   'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+    ongoing:   'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
+    completed: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300',
+    discard:   'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300',
+}
+
+const ROLE_COLORS: Record<string, string> = {
+    main:        'border-l-indigo-500',
+    protagonist: 'border-l-violet-500',
+    antagonist:  'border-l-rose-500',
+    support:     'border-l-amber-500',
+    other:       'border-l-slate-400',
+}
+
 /**
  * Create/edit form for a single plot. Handles every Plot field: name,
- * description, place, actors (characters), number, and goal. Props come from
- * the route: `id` is `'new'` for create mode, or an existing plot id for edit
- * mode.
+ * description, place, actors (characters with roles), number, and goal.
+ * Props come from the route: `id` is `'new'` for create mode, or an
+ * existing plot id for edit mode.
  *
  * Layout mirrors GroupFormView: a header toolbar, and a single-column form
  * page with all fields in a card.
@@ -38,7 +70,9 @@ const id = ref(existing.value?.id ?? '')
 const name = ref(existing.value?.name ?? '')
 const description = ref(existing.value?.description ?? '')
 const placeId = ref(existing.value?.placeId ?? '')
-const actorIds = ref<string[]>(existing.value?.actorIds ?? [])
+const actors = ref<{ id: string; role: ActorRole }[]>(
+  existing.value?.actors ?? [],
+)
 const number = ref<number>(existing.value?.number ?? 0)
 const goal = ref(existing.value?.goal ?? '')
 const status = ref(existing.value?.status ?? 'pending')
@@ -50,7 +84,7 @@ const universes = computed<Universe[]>(
   () => project.value?.database.universes ?? [],
 )
 
-/** Characters available for the actors multi-select. */
+/** Characters available for the actors modal. */
 const characters = computed<Character[]>(
   () => project.value?.database.characters ?? [],
 )
@@ -64,13 +98,35 @@ function fullName(character: Character): string {
   return [character.firstName, character.lastName].filter(Boolean).join(' ')
 }
 
-/** Toggles an actor id in the selected set. */
-function toggleActor(actorId: string) {
-  if (actorIds.value.includes(actorId)) {
-    actorIds.value = actorIds.value.filter((id) => id !== actorId)
-  } else {
-    actorIds.value = [...actorIds.value, actorId]
-  }
+/* ── Add-Actor Modal State ─────────────────────────────────────────── */
+const showAddActor = ref(false)
+const selectedCharId = ref('')
+const selectedRole = ref<ActorRole>('main')
+const customRoleLabel = ref('')
+
+function openAddActor() {
+    selectedCharId.value = ''
+    selectedRole.value = 'main'
+    customRoleLabel.value = ''
+    showAddActor.value = true
+}
+
+function saveActor() {
+    const charId = selectedCharId.value
+    if (!charId) return
+    // Prevent duplicates.
+    if (actors.value.some((a) => a.id === charId)) return
+    const roleVal = selectedRole.value === 'other' && customRoleLabel.value.trim()
+        ? customRoleLabel.value.trim() as ActorRole
+        : selectedRole.value
+    actors.value = [...actors.value, { id: charId, role: roleVal }]
+    selectedCharId.value = ''
+    selectedRole.value = 'main'
+    customRoleLabel.value = ''
+}
+
+function removeActor(actorId: string) {
+    actors.value = actors.value.filter((a) => a.id !== actorId)
 }
 
 function goHome() {
@@ -89,7 +145,7 @@ function save() {
   plot.id = id.value.trim() || crypto.randomUUID()
   plot.description = description.value.trim()
   plot.placeId = placeId.value.trim() || null
-  plot.actorIds = [...actorIds.value]
+  plot.actors = [...actors.value]
   plot.number = number.value
   plot.goal = goal.value.trim()
   plot.status = status.value
@@ -219,35 +275,130 @@ function save() {
           </select>
         </label>
 
-        <fieldset>
+        <div>
           <legend class="text-sm font-medium text-slate-700 dark:text-slate-300">
-            Characters
+            Characters in this plot
             <span class="font-normal text-slate-400 dark:text-slate-500">(optional)</span>
           </legend>
 
-          <div
-            v-if="characters.length > 0"
-            class="mt-2 max-h-56 space-y-1 overflow-y-auto rounded-lg border border-slate-200 p-2 dark:border-slate-600"
-          >
-            <label
-              v-for="character in characters"
-              :key="character.id"
-              class="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-sm text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-700"
+          <!-- Actor list / placeholder -->
+          <div v-if="actors.length > 0" class="mt-2 space-y-1">
+            <div
+              v-for="actor in actors"
+              :key="actor.id"
+              class="flex items-center gap-2 rounded-md border-l-4 bg-white px-3 py-2 shadow-sm transition hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-800"
+              :class="ROLE_COLORS[actor.role as string] ?? ROLE_COLORS.other"
             >
-              <input
-                type="checkbox"
-                class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-800"
-                :checked="actorIds.includes(character.id)"
-                @change="toggleActor(character.id)"
-              />
-              <span class="truncate">{{ fullName(character) }}</span>
-            </label>
+              <button
+                type="button"
+                class="cursor-pointer text-left text-sm text-slate-700 dark:text-slate-200 hover:underline"
+                @click="removeActor(actor.id)"
+              >
+                {{ fullName(characters.find((c) => c.id === actor.id)!) }}
+              </button>
+              <span
+                class="ml-auto shrink-0 rounded-full px-2 py-0.5 text-xs font-medium capitalize"
+                :class="STATUS_BADGE[actor.role as string] ?? STATUS_BADGE.other"
+              >
+                {{ actor.role }}
+              </span>
+              <button
+                type="button"
+                class="ml-1 text-slate-400 transition hover:text-red-500 dark:hover:text-red-400"
+                title="Remove character from plot"
+                @click="removeActor(actor.id)"
+              >
+                ×
+              </button>
+            </div>
           </div>
+
           <p v-else class="mt-1 text-sm text-slate-400 dark:text-slate-500">
-            No characters available yet.
+            No characters added yet.
           </p>
-        </fieldset>
+
+          <!-- Add button -->
+          <button
+            type="button"
+            variant="bordered"
+            class="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-dashed border-slate-300 px-3 py-1.5 text-sm text-slate-500 transition hover:border-indigo-400 hover:text-indigo-600 dark:border-slate-600 dark:text-slate-400 dark:hover:border-indigo-500 dark:hover:text-indigo-400"
+            @click="openAddActor()"
+          >
+            + Add Character
+          </button>
+        </div>
       </form>
     </section>
+
+    <!-- Modal: select character + role -->
+    <AppModal v-if="showAddActor" title="Add Character to Plot" @close="showAddActor = false">
+      <div class="space-y-4 text-left">
+        <!-- Character picker -->
+        <div>
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+            Select Character
+          </label>
+          <select
+            v-model="selectedCharId"
+            class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-50 dark:focus:ring-indigo-900"
+          >
+            <option value="">— choose —</option>
+            <option v-for="char in characters" :key="char.id" :value="char.id">
+              {{ fullName(char) }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Role picker -->
+        <div>
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+            Role in Plot
+          </label>
+          <select
+            v-model="selectedRole"
+            class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-50 dark:focus:ring-indigo-900"
+          >
+            <option v-for="opt in ROLE_OPTIONS" :key="opt.value" :value="opt.value">
+              {{ opt.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Custom label (only when 'other') -->
+        <div v-if="selectedRole === 'other'">
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+            Custom Label
+            <span class="font-normal text-slate-400">(free-form role)</span>
+          </label>
+          <input
+            v-model="customRoleLabel"
+            type="text"
+            placeholder="e.g. companion, enemy"
+            class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-50 dark:focus:ring-indigo-900"
+          />
+        </div>
+
+        <!-- Preview -->
+        <div
+          v-if="selectedCharId"
+          class="rounded-lg bg-slate-50 p-3 text-sm text-slate-600 dark:bg-slate-900 dark:text-slate-300"
+        >
+          <strong>{{ fullName(characters.find((c) => c.id === selectedCharId)!) }}</strong> will be added as
+          <strong>{{ selectedRole === 'other' && customRoleLabel.trim() ? customRoleLabel.trim() : selectedRole }}</strong>.
+        </div>
+
+        <!-- Actions -->
+        <div class="flex justify-end gap-2 pt-2">
+          <AppButton variant="bordered" @click="showAddActor = false">Cancel</AppButton>
+          <AppButton
+            type="submit"
+            :disabled="!selectedCharId"
+            @click="saveActor"
+          >
+            Add Character
+          </AppButton>
+        </div>
+      </div>
+    </AppModal>
   </main>
 </template>

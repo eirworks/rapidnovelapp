@@ -145,12 +145,23 @@ export interface TimelineData {
   universeId?: string
 }
 
+/** Preset role values for a character within a plot. */
+export type ActorRole = 'main' | 'protagonist' | 'antagonist' | 'support' | 'other'
+
+/** Persisted shape of a plot-actor with its role. */
+export interface PlotActorData {
+  id: string
+  role: ActorRole
+}
+
 export interface PlotData {
   id: string
   name: string
   description?: string
   placeId?: string | null
+  /** @deprecated Replaced by `actors` — kept for backward-compatible loading. */
   actorIds?: string[]
+  actors?: PlotActorData[]
   number?: number
   goal?: string
   /** The universe this plot belongs to, or empty when unassigned. */
