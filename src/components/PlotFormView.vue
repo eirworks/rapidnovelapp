@@ -41,6 +41,7 @@ const placeId = ref(existing.value?.placeId ?? '')
 const actorIds = ref<string[]>(existing.value?.actorIds ?? [])
 const number = ref<number>(existing.value?.number ?? 0)
 const goal = ref(existing.value?.goal ?? '')
+const status = ref(existing.value?.status ?? 'pending')
 const universeId = ref(existing.value?.universeId ?? '')
 
 const title = computed(() => (isEdit.value ? 'Edit Plot' : 'New Plot'))
@@ -91,6 +92,7 @@ function save() {
   plot.actorIds = [...actorIds.value]
   plot.number = number.value
   plot.goal = goal.value.trim()
+  plot.status = status.value
   plot.universeId = universeId.value
 
   if (isEdit.value) {
@@ -162,7 +164,7 @@ function save() {
           ></textarea>
         </label>
 
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-3 gap-4">
           <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
             Sort Number
             <span class="font-normal text-slate-400 dark:text-slate-500">(optional)</span>
@@ -173,6 +175,19 @@ function save() {
               step="1"
               class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-50 dark:focus:ring-indigo-900"
             />
+          </label>
+
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+            Status
+            <select
+              v-model="status"
+              class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-50 dark:focus:ring-indigo-900"
+            >
+              <option value="pending">Pending</option>
+              <option value="ongoing">Ongoing</option>
+              <option value="completed">Completed</option>
+              <option value="discard">Discarded</option>
+            </select>
           </label>
 
           <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">

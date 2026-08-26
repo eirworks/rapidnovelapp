@@ -63,6 +63,28 @@ function characterName(id: string): string {
   return [c.firstName, c.lastName].filter(Boolean).join(' ') || 'Unknown'
 }
 
+/** Status label (capitalised). */
+const STATUS_LABELS: Record<string, string> = {
+  pending: 'Pending',
+  ongoing: 'Ongoing',
+  completed: 'Completed',
+  discard: 'Discarded',
+}
+
+const STATUS_COLORS: Record<string, string> = {
+  pending:   'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+  ongoing:   'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
+  completed: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300',
+  discard:   'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300',
+}
+
+function statusBadge(plot: Plot) {
+  return {
+    label: STATUS_LABELS[plot.status] ?? plot.status,
+    classes: STATUS_COLORS[plot.status] ?? '',
+  }
+}
+
 /** Place name by id. */
 function placeName(id: string | null): string {
   if (!id) return ''
@@ -153,8 +175,14 @@ watch(allPlots, (plots) => {
           "
           @click="selectedId = plot.id; confirmDelete = false"
         >
-          <span class="font-medium">
+          <span class="flex items-center gap-2 font-medium">
             <template v-if="plot.number">#{{ plot.number }} </template>{{ plot.name }}
+            <span
+              class="shrink-0 rounded-full px-2 py-0.5 text-xs font-medium"
+              :class="statusBadge(plot).classes"
+            >
+              {{ statusBadge(plot).label }}
+            </span>
           </span>
           <span
             v-if="plot.placeId && placeName(plot.placeId)"
@@ -188,12 +216,20 @@ watch(allPlots, (plots) => {
           <!-- Article header + edit/delete actions -->
           <div class="flex items-start justify-between gap-4">
             <div class="min-w-0">
-              <h1
-                class="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50"
-              >
-                <template v-if="selectedPlot.number">#{{ selectedPlot.number }} </template>
-                {{ selectedPlot.name }}
-              </h1>
+              <div class="flex items-start gap-3">
+                <h1
+                  class="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50"
+                >
+                  <template v-if="selectedPlot.number">#{{ selectedPlot.number }} </template>
+                  {{ selectedPlot.name }}
+                </h1>
+                <span
+                  class="shrink-0 self-center rounded-full px-3 py-1 text-sm font-medium"
+                  :class="statusBadge(selectedPlot).classes"
+                >
+                  {{ statusBadge(selectedPlot).label }}
+                </span>
+              </div>
               <p
                 v-if="selectedPlot.placeId && placeName(selectedPlot.placeId)"
                 class="mt-1 text-sm text-indigo-600 dark:text-indigo-400"
