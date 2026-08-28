@@ -28,23 +28,16 @@ export class DraftItem {
   /** The current content of the item. */
   data: string
   /** Content before the last AI action, or null when there is nothing to undo. */
-  private recoverable: string | null
+  recoverableData: string | null
+  /** Whether the last AI action on this item can be undone (computed from recoverableData). */
+  hasUndo: boolean
 
   constructor(data = '', action: AiAction | null = null) {
     this.id = crypto.randomUUID()
     this.action = action
     this.data = data
-    this.recoverable = null
-  }
-
-  /** Whether the last AI action on this item can be undone. */
-  get hasUndo(): boolean {
-    return this.recoverable !== null
-  }
-
-  /** The content that a 1-step undo would restore, if any. */
-  get recoverableData(): string | null {
-    return this.recoverable
+    this.recoverableData = null
+    this.hasUndo = false
   }
 
   /**
@@ -53,7 +46,8 @@ export class DraftItem {
    */
   applyAction(action: AiAction, result: string): void {
     this.action = action
-    this.recoverable = this.data
+    this.recoverableData = this.data
+    this.hasUndo = true
     this.data = result
   }
 
@@ -62,9 +56,10 @@ export class DraftItem {
    * undo step: after it runs, the recoverable content is cleared.
    */
   undo(): void {
-    if (this.recoverable === null) return
-    this.data = this.recoverable
-    this.recoverable = null
+    if (this.recoverableData === null) return
+    this.data = this.recoverableData
+    this.recoverableData = null
+    this.hasUndo = false
     this.action = null
   }
 
@@ -74,7 +69,7 @@ export class DraftItem {
       id: this.id,
       actionId: this.action?.id ?? null,
       data: this.data,
-      recoverableData: this.recoverable,
+      recoverableData: this.recoverableData,
     }
   }
 
@@ -85,7 +80,8 @@ export class DraftItem {
       data.actionId ? getAiAction(data.actionId) ?? null : null,
     )
     if (data.id) item.id = data.id
-    item.recoverable = data.recoverableData ?? null
+    item.recoverableData = data.recoverableData ?? null
+    if (data.recoverableData) item.hasUndo = true
     return item
   }
 }
