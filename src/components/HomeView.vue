@@ -41,6 +41,9 @@ function openSearch(initialQuery = '') {
   >
     <!-- No project open yet: welcome greeting and entry actions -->
     <template v-if="!projectStore.project">
+      <div class="mb-5">
+        <img src="/logo.svg" alt="Logo">
+      </div> 
       <h1 class="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
         Welcome to
         <span
