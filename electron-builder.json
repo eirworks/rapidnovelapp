@@ -1,8 +1,8 @@
 {
   "$schema": "./node_modules/app-builder-lib/scheme.json",
-  "appId": "YourAppID",
+  "appId": "com.eirworks.rapidnovel",
   "asar": true,
-  "productName": "YourAppName",
+  "productName": "RapidNovel",
   "directories": {
     "output": "release/${version}"
   },
